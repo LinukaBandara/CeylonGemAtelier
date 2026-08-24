@@ -1,0 +1,16 @@
+C:\Users\linuk\Documents\CeylonGemAtelier\src\CeylonGemAtelier.Application\bin\Debug\net10.0\CeylonGemAtelier.Application.deps.json
+C:\Users\linuk\Documents\CeylonGemAtelier\src\CeylonGemAtelier.Application\bin\Debug\net10.0\CeylonGemAtelier.Application.dll
+C:\Users\linuk\Documents\CeylonGemAtelier\src\CeylonGemAtelier.Application\bin\Debug\net10.0\CeylonGemAtelier.Application.pdb
+C:\Users\linuk\Documents\CeylonGemAtelier\src\CeylonGemAtelier.Application\obj\Debug\net10.0\CeylonGemAtelier.Application.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\linuk\Documents\CeylonGemAtelier\src\CeylonGemAtelier.Application\obj\Debug\net10.0\CeylonGemAtelier.Application.AssemblyInfoInputs.cache
+C:\Users\linuk\Documents\CeylonGemAtelier\src\CeylonGemAtelier.Application\obj\Debug\net10.0\CeylonGemAtelier.Application.AssemblyInfo.cs
+C:\Users\linuk\Documents\CeylonGemAtelier\src\CeylonGemAtelier.Application\obj\Debug\net10.0\CeylonGemAtelier.Application.csproj.CoreCompileInputs.cache
+C:\Users\linuk\Documents\CeylonGemAtelier\src\CeylonGemAtelier.Application\obj\Debug\net10.0\CeylonGemAtelier.Application.sourcelink.json
+C:\Users\linuk\Documents\CeylonGemAtelier\src\CeylonGemAtelier.Application\obj\Debug\net10.0\CeylonGemAtelier.Application.dll
+C:\Users\linuk\Documents\CeylonGemAtelier\src\CeylonGemAtelier.Application\obj\Debug\net10.0\refint\CeylonGemAtelier.Application.dll
+C:\Users\linuk\Documents\CeylonGemAtelier\src\CeylonGemAtelier.Application\obj\Debug\net10.0\CeylonGemAtelier.Application.pdb
+C:\Users\linuk\Documents\CeylonGemAtelier\src\CeylonGemAtelier.Application\obj\Debug\net10.0\ref\CeylonGemAtelier.Application.dll
+C:\Users\linuk\Documents\CeylonGemAtelier\src\CeylonGemAtelier.Application\bin\Debug\net10.0\CeylonGemAtelier.Domain.dll
+C:\Users\linuk\Documents\CeylonGemAtelier\src\CeylonGemAtelier.Application\bin\Debug\net10.0\CeylonGemAtelier.Domain.pdb
+C:\Users\linuk\Documents\CeylonGemAtelier\src\CeylonGemAtelier.Application\obj\Debug\net10.0\CeylonGemAtelier.Application.csproj.AssemblyReference.cache
+C:\Users\linuk\Documents\CeylonGemAtelier\src\CeylonGemAtelier.Application\obj\Debug\net10.0\CeylonGe.261C7131.Up2Date

@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CeylonGemAtelier.API/CeylonGemAtelier.API.csproj" />
+    <Project Path="src/CeylonGemAtelier.Application/CeylonGemAtelier.Application.csproj" />
+    <Project Path="src/CeylonGemAtelier.Domain/CeylonGemAtelier.Domain.csproj" />
+    <Project Path="src/CeylonGemAtelier.Infrastructure/CeylonGemAtelier.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CeylonGemAtelier.IntegrationTests/CeylonGemAtelier.IntegrationTests.csproj" />
+    <Project Path="tests/CeylonGemAtelier.UnitTests/CeylonGemAtelier.UnitTests.csproj" />
+  </Folder>
+</Solution>
