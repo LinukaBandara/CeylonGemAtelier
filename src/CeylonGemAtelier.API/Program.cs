@@ -1,12 +1,36 @@
-var builder = WebApplication.CreateBuilder(args);
+using CeylonGemAtelier.Application.Catalog.Interfaces;
+using CeylonGemAtelier.Application.Catalog.Services;
+using CeylonGemAtelier.Infrastructure.Persistence;
+using CeylonGemAtelier.Infrastructure.Persistence.Repositories;
+using Microsoft.EntityFrameworkCore;
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddControllers();
+
 builder.Services.AddOpenApi();
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection"));
+});
+
+builder.Services.AddScoped<IGemstoneProductRepository, GemstoneProductRepository>();
+builder.Services.AddScoped<IGemstoneCatalogService, GemstoneCatalogService>();
+
+builder.Services.AddScoped<IGemstoneTypeRepository, GemstoneTypeRepository>();
+builder.Services.AddScoped<GemstoneTypeService>();
+
+builder.Services.AddScoped<IGemstoneVarietyRepository, GemstoneVarietyRepository>();
+builder.Services.AddScoped<IShapeRepository, ShapeRepository>();
+builder.Services.AddScoped<ITreatmentRepository, TreatmentRepository>();
+builder.Services.AddScoped<IOriginRepository, OriginRepository>();
+builder.Services.AddScoped<ILaboratoryRepository, LaboratoryRepository>();
+
+builder.Services.AddScoped<ReferenceDataService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -14,28 +38,21 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.MapGet("/api/health", async (
+    ApplicationDbContext dbContext,
+    CancellationToken cancellationToken) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    var databaseHealthy = await dbContext.Database.CanConnectAsync(
+        cancellationToken);
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast");
+    return Results.Ok(new
+    {
+        status = databaseHealthy ? "healthy" : "unhealthy",
+        database = databaseHealthy
+            ? "ceylon_gem_atelier"
+            : "unavailable"
+    });
+});
 
+app.MapControllers();
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
