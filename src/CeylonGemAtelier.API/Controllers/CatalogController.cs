@@ -1,4 +1,6 @@
+using CeylonGemAtelier.Application.Catalog.DTOs;
 using CeylonGemAtelier.Application.Catalog.Interfaces;
+using CeylonGemAtelier.Application.Catalog.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CeylonGemAtelier.API.Controllers;
@@ -8,11 +10,14 @@ namespace CeylonGemAtelier.API.Controllers;
 public sealed class CatalogController : ControllerBase
 {
     private readonly IGemstoneCatalogService _catalogService;
+private readonly GemstoneCatalogDetailsService _catalogDetailsService;
 
     public CatalogController(
-        IGemstoneCatalogService catalogService)
+        IGemstoneCatalogService catalogService,
+        GemstoneCatalogDetailsService catalogDetailsService)
     {
         _catalogService = catalogService;
+        _catalogDetailsService = catalogDetailsService;
     }
 
     [HttpGet("products")]
@@ -40,5 +45,54 @@ public sealed class CatalogController : ControllerBase
         }
 
         return Ok(product);
+    }
+
+
+    [HttpGet("products/{slug}/details")]
+    public async Task<IActionResult> GetProductDetails(
+        string slug,
+        CancellationToken cancellationToken)
+    {
+        var product = await _catalogDetailsService.GetBySlugAsync(
+            slug,
+            cancellationToken);
+
+        if (product is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(product);
+    }
+    [HttpPost("products")]
+    public async Task<IActionResult> CreateProduct(
+        [FromBody] CreateGemstoneProductRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var product = await _catalogService.CreateProductAsync(
+                request,
+                cancellationToken);
+
+            return CreatedAtAction(
+                nameof(GetProduct),
+                new { slug = product.Slug },
+                product);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new
+            {
+                message = ex.Message
+            });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new
+            {
+                message = ex.Message
+            });
+        }
     }
 }

@@ -10,4 +10,8 @@ public interface IGemstoneCatalogService
     Task<GemstoneProductDto?> GetProductBySlugAsync(
         string slug,
         CancellationToken cancellationToken = default);
+
+    Task<GemstoneProductDto> CreateProductAsync(
+        CreateGemstoneProductRequest request,
+        CancellationToken cancellationToken = default);
 }

@@ -1,0 +1,729 @@
+﻿.gemstone-detail-page {
+  --detail-bg: #0d0d0c;
+  --detail-card: #141413;
+  --detail-card-soft: #11110f;
+  --detail-border: #302c27;
+  --detail-border-soft: #24211e;
+  --detail-ivory: #f5f1e8;
+  --detail-muted: #8d857a;
+  --detail-soft: #625b53;
+  --detail-gold: #c6a15b;
+  --detail-gold-bright: #d8b871;
+  --detail-burgundy: #4a2833;
+
+  min-height: calc(100vh - 72px);
+  margin: -46px -58px -90px;
+  padding: 32px 35px 55px;
+  background:
+    radial-gradient(
+      circle at 78% -10%,
+      rgba(198, 161, 91, 0.055),
+      transparent 27%
+    ),
+    var(--detail-bg);
+  color: var(--detail-ivory);
+}
+
+.detail-header {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--detail-border);
+}
+
+.detail-header-left {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #746c62;
+  font-size: 7.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.detail-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #9b9185;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.detail-back:hover {
+  color: var(--detail-gold);
+}
+
+.detail-header-chevron {
+  color: #453f38;
+}
+
+.detail-edit-button,
+.detail-back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid #3a3630;
+  border-radius: 4px;
+  background: #171614;
+  color: #aaa195;
+  text-decoration: none;
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  transition: 160ms ease;
+}
+
+.detail-edit-button:hover,
+.detail-back-button:hover {
+  border-color: rgba(198, 161, 91, 0.45);
+  color: var(--detail-gold-bright);
+}
+
+.detail-identity {
+  min-height: 150px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 31px 0 28px;
+}
+
+.detail-eyebrow {
+  display: block;
+  color: var(--detail-gold);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.detail-identity h1 {
+  margin: 9px 0 8px;
+  color: var(--detail-ivory);
+  font-family: "Cormorant Garamond", serif;
+  font-size: 39px;
+  line-height: 0.95;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.detail-subline {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #625b53;
+  font-size: 7.5px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+}
+
+.detail-subline i {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #645a4e;
+}
+
+.detail-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 25px;
+  padding: 0 10px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  font-size: 6.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.detail-status > span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.status-available {
+  color: #a5c09c;
+  border-color: #314330;
+  background: #172319;
+}
+
+.status-available > span {
+  background: #8cae7d;
+}
+
+.status-reserved {
+  color: #d4b46d;
+  border-color: #514122;
+  background: #28200f;
+}
+
+.status-reserved > span {
+  background: #c6a15b;
+}
+
+.status-sold {
+  color: #d18a98;
+  border-color: #512932;
+  background: #2b151a;
+}
+
+.status-sold > span {
+  background: #b86c7d;
+}
+
+.status-unavailable,
+.status-unknown {
+  color: #918b82;
+  border-color: #393530;
+  background: #211f1c;
+}
+
+.status-unavailable > span,
+.status-unknown > span {
+  background: #716b63;
+}
+
+.detail-main {
+  display: grid;
+  grid-template-columns: minmax(330px, 0.9fr) minmax(440px, 1.1fr);
+  gap: 12px;
+}
+
+.detail-visual-panel,
+.detail-panel,
+.detail-mini-panel {
+  border: 1px solid var(--detail-border);
+  background: var(--detail-card);
+}
+
+.detail-visual-panel {
+  min-height: 445px;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-gemstone-visual {
+  position: relative;
+  flex: 1;
+  min-height: 385px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(198, 161, 91, 0.055),
+      transparent 34%
+    ),
+    #10100f;
+}
+
+.detail-gemstone-visual::before {
+  content: "";
+  position: absolute;
+  width: 260px;
+  height: 260px;
+  border: 1px solid rgba(198, 161, 91, 0.07);
+  transform: rotate(45deg);
+}
+
+.detail-gem-glow {
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(198, 161, 91, 0.045);
+  filter: blur(35px);
+}
+
+.detail-gem-shape {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  transform: rotate(45deg);
+  border-radius: 18% 52% 24% 50%;
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255,255,255,.65), transparent 5%),
+    linear-gradient(135deg, #82796d, #37332d 60%, #191816);
+  box-shadow:
+    inset 15px 10px 35px rgba(255,255,255,.1),
+    inset -20px -25px 40px rgba(0,0,0,.55),
+    0 30px 60px rgba(0,0,0,.45);
+}
+
+.gem-sapphire .detail-gem-shape {
+  background:
+    radial-gradient(circle at 30% 25%, rgba(210,225,255,.8), transparent 5%),
+    linear-gradient(135deg, #3156b4, #10255e 60%, #07142f);
+}
+
+.gem-padparadscha .detail-gem-shape {
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255,224,205,.8), transparent 5%),
+    linear-gradient(135deg, #e38a67, #803828 62%, #351713);
+}
+
+.gem-ruby .detail-gem-shape {
+  background:
+    radial-gradient(circle at 30% 25%, rgba(255,180,190,.75), transparent 5%),
+    linear-gradient(135deg, #ca2948, #681225 62%, #29070e);
+}
+
+.gem-spinel .detail-gem-shape {
+  background:
+    radial-gradient(circle at 30% 25%, rgba(246,190,244,.7), transparent 5%),
+    linear-gradient(135deg, #9c3f7c, #4b1d45 62%, #1d101c);
+}
+
+.detail-facet {
+  position: absolute;
+  inset: 20px;
+  border: 1px solid rgba(255,255,255,.18);
+}
+
+.facet-one {
+  transform: rotate(45deg);
+}
+
+.facet-two {
+  inset: 30px 10px;
+  transform: rotate(90deg);
+}
+
+.facet-three {
+  inset: 10px 30px;
+  transform: rotate(135deg);
+}
+
+.facet-four {
+  inset: 42px 20px;
+  transform: rotate(45deg);
+  border-color: rgba(255,255,255,.12);
+}
+
+.detail-gem-highlight {
+  position: absolute;
+  width: 14px;
+  height: 35px;
+  top: 13px;
+  left: 22px;
+  border-radius: 50%;
+  background: rgba(255,255,255,.28);
+  filter: blur(4px);
+}
+
+.detail-visual-label {
+  position: absolute;
+  bottom: 14px;
+  left: 16px;
+  color: #4f4942;
+  font-size: 5.5px;
+  font-weight: 700;
+  letter-spacing: .18em;
+}
+
+.visual-footer {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-top: 1px solid var(--detail-border);
+  background: #11110f;
+}
+
+.visual-footer div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.visual-footer strong {
+  color: #b8afa2;
+  font-family: "Libre Baskerville", serif;
+  font-size: 8px;
+  font-weight: 400;
+}
+
+.visual-footer > span {
+  color: #514b44;
+  font-size: 5.5px;
+  font-weight: 700;
+  letter-spacing: .16em;
+}
+
+.detail-information {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.detail-panel {
+  padding: 18px;
+}
+
+.detail-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 15px;
+  border-bottom: 1px solid var(--detail-border-soft);
+}
+
+.detail-panel-heading > svg {
+  color: #655d53;
+}
+
+.detail-panel-heading h2 {
+  margin: 6px 0 0;
+  color: #d8d0c4;
+  font-family: "Libre Baskerville", serif;
+  font-size: 11px;
+  font-weight: 400;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.detail-row {
+  min-height: 67px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-bottom: 1px solid var(--detail-border-soft);
+}
+
+.detail-row:nth-child(odd) {
+  border-right: 1px solid var(--detail-border-soft);
+}
+
+.detail-row:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.detail-row span {
+  color: #5e574f;
+  font-size: 6.5px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.detail-row strong {
+  color: #bcb3a7;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.valuation-panel {
+  min-height: 156px;
+}
+
+.detail-price {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin-top: 20px;
+}
+
+.detail-price strong {
+  color: var(--detail-gold-bright);
+  font-family: "Cormorant Garamond", serif;
+  font-size: 35px;
+  line-height: .9;
+  font-weight: 500;
+}
+
+.detail-price span {
+  color: #655e55;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: .1em;
+}
+
+.valuation-note {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 15px;
+  color: #5c554d;
+  font-size: 6.5px;
+}
+
+.valuation-note span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--detail-gold);
+  box-shadow: 0 0 0 3px rgba(198,161,91,.07);
+}
+
+.detail-lower-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.detail-mini-panel {
+  min-height: 115px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+
+.detail-mini-panel:hover {
+  border-color: #403a32;
+  background: #171614;
+}
+
+.mini-icon {
+  width: 29px;
+  height: 29px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid #37322c;
+  background: #11110f;
+  color: var(--detail-gold);
+}
+
+.detail-mini-panel > div:nth-child(2) {
+  flex: 1;
+}
+
+.detail-mini-panel h3 {
+  margin: 6px 0 5px;
+  color: #c9c1b5;
+  font-family: "Libre Baskerville", serif;
+  font-size: 9px;
+  font-weight: 400;
+}
+
+.detail-mini-panel p {
+  margin: 0;
+  color: #625b53;
+  font-size: 7px;
+  line-height: 1.6;
+}
+
+.detail-mini-panel > svg {
+  margin-top: 8px;
+  color: #514a42;
+}
+
+.detail-footer {
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 18px;
+  padding-top: 13px;
+  border-top: 1px solid #24211e;
+  color: #4e4841;
+  font-size: 6px;
+  letter-spacing: .06em;
+}
+
+.detail-footer div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.detail-footer svg {
+  color: #6b5a3e;
+}
+
+.detail-loading {
+  min-height: 55vh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 13px;
+  color: #6b645c;
+  font-size: 8px;
+}
+
+.detail-loading-line {
+  width: 150px;
+  height: 2px;
+  overflow: hidden;
+  background: #25221e;
+}
+
+.detail-loading-line::after {
+  content: "";
+  display: block;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, var(--detail-gold), transparent);
+  animation: detail-loading 1.2s infinite ease-in-out;
+}
+
+@keyframes detail-loading {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(190%); }
+}
+
+.detail-error {
+  max-width: 600px;
+  padding-top: 90px;
+}
+
+.detail-error h1 {
+  margin: 10px 0 8px;
+  font: 500 40px/1 "Cormorant Garamond", serif;
+}
+
+.detail-error p {
+  margin: 0 0 22px;
+  color: #756d63;
+  font-size: 9px;
+  line-height: 1.7;
+}
+
+@media (max-width: 1050px) {
+  .detail-main {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-visual-panel {
+    min-height: 420px;
+  }
+
+  .detail-lower-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 900px) {
+  .gemstone-detail-page {
+    margin: -34px -24px -70px;
+    padding: 27px 24px 75px;
+  }
+
+  .detail-identity {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .detail-status {
+    align-self: flex-start;
+  }
+}
+
+@media (max-width: 600px) {
+  .gemstone-detail-page {
+    min-height: calc(100vh - 62px);
+    margin: -28px -17px -55px;
+    padding: 21px 14px 65px;
+  }
+
+  .detail-header {
+    min-height: 48px;
+  }
+
+  .detail-header-left > span,
+  .detail-header-chevron {
+    display: none;
+  }
+
+  .detail-edit-button {
+    min-height: 29px;
+    padding: 0 9px;
+    font-size: 6.5px;
+  }
+
+  .detail-identity {
+    min-height: 130px;
+    padding: 24px 0 21px;
+  }
+
+  .detail-identity h1 {
+    font-size: 31px;
+  }
+
+  .detail-subline {
+    font-size: 6.5px;
+  }
+
+  .detail-main {
+    gap: 8px;
+  }
+
+  .detail-visual-panel {
+    min-height: 330px;
+  }
+
+  .detail-gemstone-visual {
+    min-height: 275px;
+  }
+
+  .detail-gem-shape {
+    width: 105px;
+    height: 105px;
+  }
+
+  .detail-gemstone-visual::before {
+    width: 190px;
+    height: 190px;
+  }
+
+  .detail-information {
+    gap: 8px;
+  }
+
+  .detail-panel {
+    padding: 14px;
+  }
+
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-row {
+    min-height: 59px;
+    padding: 8px 4px;
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--detail-border-soft) !important;
+  }
+
+  .detail-row:last-child {
+    border-bottom: 0 !important;
+  }
+
+  .detail-price strong {
+    font-size: 31px;
+  }
+
+  .detail-lower-grid {
+    gap: 8px;
+  }
+
+  .detail-mini-panel {
+    min-height: 100px;
+    padding: 13px;
+  }
+
+  .detail-footer {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 7px;
+  }
+}

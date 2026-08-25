@@ -2,20 +2,20 @@ using CeylonGemAtelier.Domain.Catalog.Entities;
 
 namespace CeylonGemAtelier.Application.Catalog.Interfaces;
 
-public interface IGemstoneProductRepository
+public interface IGemstoneMediaRepository
 {
-    Task<IReadOnlyList<GemstoneProduct>> GetAllAsync(
+    Task<IReadOnlyList<GemstoneMedia>> GetByItemIdAsync(
+        Guid gemstoneItemId,
         CancellationToken cancellationToken = default);
 
-    Task<GemstoneProduct?> GetBySlugAsync(
-        string slug,
+    Task<GemstoneMedia?> GetByIdAsync(
+        Guid id,
         CancellationToken cancellationToken = default);
 
     Task AddAsync(
-        GemstoneProduct product,
+        GemstoneMedia media,
         CancellationToken cancellationToken = default);
 
-    Task<bool> SlugExistsAsync(
-        string slug,
+    Task SaveChangesAsync(
         CancellationToken cancellationToken = default);
 }

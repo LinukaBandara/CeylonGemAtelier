@@ -36,4 +36,25 @@ public sealed class GemstoneProductRepository
                 x => x.Slug == slug,
                 cancellationToken);
     }
+
+    public async Task AddAsync(
+        GemstoneProduct product,
+        CancellationToken cancellationToken = default)
+    {
+        await _dbContext.GemstoneProducts.AddAsync(
+            product,
+            cancellationToken);
+
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<bool> SlugExistsAsync(
+        string slug,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.GemstoneProducts
+            .AnyAsync(
+                x => x.Slug == slug,
+                cancellationToken);
+    }
 }

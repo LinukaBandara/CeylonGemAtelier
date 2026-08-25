@@ -17,7 +17,8 @@ public sealed class GemstoneCatalogService : IGemstoneCatalogService
     public async Task<IReadOnlyList<GemstoneProductDto>> GetProductsAsync(
         CancellationToken cancellationToken = default)
     {
-        var products = await _repository.GetAllAsync(cancellationToken);
+        var products = await _repository.GetAllAsync(
+            cancellationToken);
 
         return products
             .Select(MapProduct)
@@ -37,7 +38,41 @@ public sealed class GemstoneCatalogService : IGemstoneCatalogService
             slug.Trim().ToLowerInvariant(),
             cancellationToken);
 
-        return product is null ? null : MapProduct(product);
+        return product is null
+            ? null
+            : MapProduct(product);
+    }
+
+    public async Task<GemstoneProductDto> CreateProductAsync(
+        CreateGemstoneProductRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var slug = request.Slug.Trim().ToLowerInvariant();
+
+        var existingProduct = await _repository.GetBySlugAsync(
+            slug,
+            cancellationToken);
+
+        if (existingProduct is not null)
+        {
+            throw new InvalidOperationException(
+                "A gemstone product with this slug already exists.");
+        }
+
+        var product = new GemstoneProduct(
+            request.Name,
+            slug,
+            request.GemstoneTypeId,
+            request.GemstoneVarietyId,
+            request.Description);
+
+        await _repository.AddAsync(
+            product,
+            cancellationToken);
+
+        return MapProduct(product);
     }
 
     private static GemstoneProductDto MapProduct(

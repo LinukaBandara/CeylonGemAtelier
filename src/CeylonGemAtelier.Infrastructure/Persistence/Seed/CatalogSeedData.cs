@@ -1,5 +1,6 @@
-using Microsoft.EntityFrameworkCore;
 using CeylonGemAtelier.Domain.Catalog.Entities;
+using CeylonGemAtelier.Domain.Common.ValueObjects;
+using Microsoft.EntityFrameworkCore;
 
 namespace CeylonGemAtelier.Infrastructure.Persistence.Seed;
 
@@ -59,15 +60,42 @@ public static class CatalogSeedData
     public static readonly Guid DiffusionTreatmentId =
         Guid.Parse("30000000-0000-0000-0000-000000000003");
 
+    private static readonly Guid BlueSapphireProductId =
+        Guid.Parse("60000000-0000-0000-0000-000000000001");
+
+    private static readonly Guid PadparadschaProductId =
+        Guid.Parse("60000000-0000-0000-0000-000000000002");
+
+    private static readonly Guid RubyProductId =
+        Guid.Parse("60000000-0000-0000-0000-000000000003");
+
+    private static readonly Guid BlueSapphireItemId =
+        Guid.Parse("70000000-0000-0000-0000-000000000001");
+
+    private static readonly Guid PadparadschaItemId =
+        Guid.Parse("70000000-0000-0000-0000-000000000002");
+
+    private static readonly Guid RubyItemId =
+        Guid.Parse("70000000-0000-0000-0000-000000000003");
+
     public static void Seed(ApplicationDbContext db)
     {
         SeedGemstoneTypes(db);
+        db.SaveChanges();
+
         SeedVarieties(db);
+        db.SaveChanges();
+
         SeedShapes(db);
         SeedTreatments(db);
         SeedOrigins(db);
         SeedLaboratories(db);
+        db.SaveChanges();
 
+        SeedProducts(db);
+        db.SaveChanges();
+
+        SeedItems(db);
         db.SaveChanges();
     }
 
@@ -97,44 +125,83 @@ public static class CatalogSeedData
 
     private static void SeedVarieties(ApplicationDbContext db)
     {
-        if (db.GemstoneVarieties.Any())
-            return;
+        EnsureVariety(
+            db,
+            SapphireTypeId,
+            "Blue Sapphire",
+            "Classic blue sapphire.");
 
-        db.GemstoneVarieties.AddRange(
-            new GemstoneVariety(
-                SapphireTypeId,
-                "Blue Sapphire",
-                "Classic blue sapphire."),
+        EnsureVariety(
+            db,
+            SapphireTypeId,
+            "Padparadscha",
+            "Rare pink-orange sapphire.");
 
-            new GemstoneVariety(
-                SapphireTypeId,
-                "Padparadscha",
-                "Rare pink-orange sapphire."),
+        EnsureVariety(
+            db,
+            SapphireTypeId,
+            "Star Sapphire",
+            "Sapphire displaying asterism.");
 
-            new GemstoneVariety(
-                SapphireTypeId,
-                "Star Sapphire",
-                "Sapphire displaying asterism."),
+        EnsureVariety(
+            db,
+            RubyTypeId,
+            "Ruby",
+            "Gem-quality red corundum.");
 
-            new GemstoneVariety(
-                RubyTypeId,
-                "Ruby",
-                "Gem-quality red corundum."),
+        EnsureVariety(
+            db,
+            SpinelTypeId,
+            "Red Spinel",
+            "Red to vivid red spinel.");
+    }
 
-            new GemstoneVariety(
-                SpinelTypeId,
-                "Red Spinel",
-                "Red to vivid red spinel.")
-        );
+    private static void EnsureVariety(
+        ApplicationDbContext db,
+        Guid gemstoneTypeId,
+        string name,
+        string description)
+    {
+        var exists = db.GemstoneVarieties.Any(x =>
+            x.GemstoneTypeId == gemstoneTypeId &&
+            x.Name == name);
+
+        if (!exists)
+        {
+            db.GemstoneVarieties.Add(
+                new GemstoneVariety(
+                    gemstoneTypeId,
+                    name,
+                    description));
+        }
     }
 
     private static void SeedShapes(ApplicationDbContext db)
     {
-        AddIfMissing(db.Shapes, OvalShapeId, () => new Shape("Oval"));
-        AddIfMissing(db.Shapes, CushionShapeId, () => new Shape("Cushion"));
-        AddIfMissing(db.Shapes, RoundShapeId, () => new Shape("Round"));
-        AddIfMissing(db.Shapes, PearShapeId, () => new Shape("Pear"));
-        AddIfMissing(db.Shapes, EmeraldShapeId, () => new Shape("Emerald"));
+        AddIfMissing(
+            db.Shapes,
+            OvalShapeId,
+            () => new Shape("Oval"));
+
+        AddIfMissing(
+            db.Shapes,
+            CushionShapeId,
+            () => new Shape("Cushion"));
+
+        AddIfMissing(
+            db.Shapes,
+            RoundShapeId,
+            () => new Shape("Round"));
+
+        AddIfMissing(
+            db.Shapes,
+            PearShapeId,
+            () => new Shape("Pear"));
+
+        AddIfMissing(
+            db.Shapes,
+            EmeraldShapeId,
+            () => new Shape("Emerald"));
     }
 
     private static void SeedTreatments(ApplicationDbContext db)
@@ -231,6 +298,125 @@ public static class CatalogSeedData
                 "SSEF",
                 "https://www.ssef.ch",
                 "Swiss gemstone laboratory."));
+    }
+
+    private static void SeedProducts(ApplicationDbContext db)
+    {
+        AddIfMissing(
+            db.GemstoneProducts,
+            BlueSapphireProductId,
+            () => new GemstoneProduct(
+                "Ceylon Blue Sapphire",
+                "ceylon-blue-sapphire",
+                SapphireTypeId,
+                GetVarietyId(
+                    db,
+                    SapphireTypeId,
+                    "Blue Sapphire"),
+                "Natural Ceylon blue sapphire from Sri Lanka."));
+
+        AddIfMissing(
+            db.GemstoneProducts,
+            PadparadschaProductId,
+            () => new GemstoneProduct(
+                "Ceylon Padparadscha Sapphire",
+                "ceylon-padparadscha-sapphire",
+                SapphireTypeId,
+                GetVarietyId(
+                    db,
+                    SapphireTypeId,
+                    "Padparadscha"),
+                "Rare pink-orange Ceylon Padparadscha sapphire."));
+
+        AddIfMissing(
+            db.GemstoneProducts,
+            RubyProductId,
+            () => new GemstoneProduct(
+                "Ceylon Ruby",
+                "ceylon-ruby",
+                RubyTypeId,
+                GetVarietyId(
+                    db,
+                    RubyTypeId,
+                    "Ruby"),
+                "Natural Sri Lankan ruby."));
+    }
+
+    private static void SeedItems(ApplicationDbContext db)
+    {
+        AddIfMissing(
+            db.GemstoneItems,
+            BlueSapphireItemId,
+            () => new GemstoneItem(
+                BlueSapphireProductId,
+                "CGA-0001",
+                2.31m,
+                OvalShapeId,
+                UnheatedTreatmentId,
+                SriLankaOriginId,
+                "Royal Blue",
+                "Eye Clean",
+                8.20m,
+                6.10m,
+                4.30m,
+                new Money(4500m, "USD"),
+                new Money(7200m, "USD")));
+
+        AddIfMissing(
+            db.GemstoneItems,
+            PadparadschaItemId,
+            () => new GemstoneItem(
+                PadparadschaProductId,
+                "CGA-0002",
+                1.84m,
+                CushionShapeId,
+                UnheatedTreatmentId,
+                SriLankaOriginId,
+                "Pinkish Orange",
+                "Eye Clean",
+                7.10m,
+                5.90m,
+                4.20m,
+                new Money(8500m, "USD"),
+                new Money(14500m, "USD")));
+
+        AddIfMissing(
+            db.GemstoneItems,
+            RubyItemId,
+            () => new GemstoneItem(
+                RubyProductId,
+                "CGA-0003",
+                2.05m,
+                CushionShapeId,
+                HeatTreatmentId,
+                SriLankaOriginId,
+                "Vivid Red",
+                "Eye Clean",
+                7.40m,
+                6.20m,
+                4.60m,
+                new Money(3200m, "USD"),
+                new Money(5600m, "USD")));
+    }
+
+    private static Guid GetVarietyId(
+        ApplicationDbContext db,
+        Guid gemstoneTypeId,
+        string name)
+    {
+        var variety = db.GemstoneVarieties
+            .FirstOrDefault(x =>
+                x.GemstoneTypeId == gemstoneTypeId &&
+                x.Name == name);
+
+        if (variety == null)
+        {
+            throw new InvalidOperationException(
+                $"Required gemstone variety was not found. " +
+                $"TypeId: {gemstoneTypeId}, Name: '{name}'.");
+        }
+
+        return variety.Id;
     }
 
     private static void AddIfMissing<T>(

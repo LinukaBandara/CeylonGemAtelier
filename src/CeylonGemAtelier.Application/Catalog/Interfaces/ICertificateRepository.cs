@@ -2,20 +2,20 @@ using CeylonGemAtelier.Domain.Catalog.Entities;
 
 namespace CeylonGemAtelier.Application.Catalog.Interfaces;
 
-public interface IGemstoneProductRepository
+public interface ICertificateRepository
 {
-    Task<IReadOnlyList<GemstoneProduct>> GetAllAsync(
+    Task<IReadOnlyList<Certificate>> GetByItemIdAsync(
+        Guid gemstoneItemId,
         CancellationToken cancellationToken = default);
 
-    Task<GemstoneProduct?> GetBySlugAsync(
-        string slug,
+    Task<Certificate?> GetByIdAsync(
+        Guid id,
         CancellationToken cancellationToken = default);
 
     Task AddAsync(
-        GemstoneProduct product,
+        Certificate certificate,
         CancellationToken cancellationToken = default);
 
-    Task<bool> SlugExistsAsync(
-        string slug,
+    Task SaveChangesAsync(
         CancellationToken cancellationToken = default);
 }

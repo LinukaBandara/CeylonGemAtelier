@@ -37,3 +37,7 @@ dist/
 
 # Publish output
 publish/
+
+# Local backups
+frontend-backup/
+*.bak
