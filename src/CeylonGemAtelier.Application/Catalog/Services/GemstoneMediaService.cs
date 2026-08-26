@@ -14,6 +14,14 @@ public sealed class GemstoneMediaService
         _repository = repository;
     }
 
+    public async Task<IReadOnlyList<GemstoneMediaDto>> GetAllAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var media = await _repository.GetAllAsync(cancellationToken);
+
+        return media.Select(Map).ToList();
+    }
+
     public async Task<IReadOnlyList<GemstoneMediaDto>> GetByItemIdAsync(
         Guid gemstoneItemId,
         CancellationToken cancellationToken = default)

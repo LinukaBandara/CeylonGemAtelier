@@ -75,6 +75,79 @@ public sealed class GemstoneCatalogService : IGemstoneCatalogService
         return MapProduct(product);
     }
 
+    public async Task<GemstoneProductDto> UpdateProductAsync(
+        Guid id,
+        UpdateGemstoneProductRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var product = await GetEntity(id, cancellationToken);
+
+        var slug = request.Slug.Trim().ToLowerInvariant();
+
+        if (slug != product.Slug
+            && await _repository.SlugExistsAsync(slug, cancellationToken))
+        {
+            throw new InvalidOperationException(
+                "A gemstone product with this slug already exists.");
+        }
+
+        product.Update(
+            request.Name,
+            slug,
+            request.GemstoneTypeId,
+            request.GemstoneVarietyId,
+            request.Description);
+
+        await _repository.SaveChangesAsync(cancellationToken);
+
+        return MapProduct(product);
+    }
+
+    public async Task<GemstoneProductDto> PublishProductAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        var product = await GetEntity(id, cancellationToken);
+
+        product.Publish();
+
+        await _repository.SaveChangesAsync(cancellationToken);
+
+        return MapProduct(product);
+    }
+
+    public async Task<GemstoneProductDto> UnpublishProductAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        var product = await GetEntity(id, cancellationToken);
+
+        product.Unpublish();
+
+        await _repository.SaveChangesAsync(cancellationToken);
+
+        return MapProduct(product);
+    }
+
+    private async Task<GemstoneProduct> GetEntity(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        var product = await _repository.GetByIdAsync(
+            id,
+            cancellationToken);
+
+        if (product is null)
+        {
+            throw new KeyNotFoundException(
+                "Gemstone product was not found.");
+        }
+
+        return product;
+    }
+
     private static GemstoneProductDto MapProduct(
         GemstoneProduct product)
     {

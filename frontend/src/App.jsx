@@ -4,6 +4,13 @@ import Dashboard from "./pages/Dashboard";
 import Inventory from "./pages/Inventory";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import GemstoneDetail from "./pages/GemstoneDetail";
+import Products from "./pages/Products";
+import Certificates from "./pages/Certificates";
+import Media from "./pages/Media";
+import Reservations from "./pages/Reservations";
+import Sales from "./pages/Sales";
+import ReferenceData from "./pages/ReferenceData";
+import Settings from "./pages/Settings";
 
 export default function App() {
   return (
@@ -13,13 +20,13 @@ export default function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/inventory/:id" element={<GemstoneDetail />} />
-          <Route path="/products" element={<PlaceholderPage title="Products" />} />
-          <Route path="/certificates" element={<PlaceholderPage title="Certification Archive" />} />
-          <Route path="/media" element={<PlaceholderPage title="Atelier Media" />} />
-          <Route path="/reservations" element={<PlaceholderPage title="Reservations" />} />
-          <Route path="/sales" element={<PlaceholderPage title="Sales" />} />
-          <Route path="/reference-data" element={<PlaceholderPage title="Reference Data" />} />
-          <Route path="/settings" element={<PlaceholderPage title="Settings" />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/certificates" element={<Certificates />} />
+          <Route path="/media" element={<Media />} />
+          <Route path="/reservations" element={<Reservations />} />
+          <Route path="/sales" element={<Sales />} />
+          <Route path="/reference-data" element={<ReferenceData />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<PlaceholderPage title="Not Found" description="This atelier route does not exist." />} />
         </Routes>
       </AppLayout>

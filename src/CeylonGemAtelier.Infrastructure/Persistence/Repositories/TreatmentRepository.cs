@@ -21,4 +21,37 @@ public sealed class TreatmentRepository : ITreatmentRepository
             .ThenBy(x => x.Name)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Treatment>> GetAllIncludingInactiveAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Treatments
+            .AsNoTracking()
+            .OrderBy(x => x.SortOrder)
+            .ThenBy(x => x.Name)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<Treatment?> GetByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Treatments
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    }
+
+    public async Task AddAsync(
+        Treatment treatment,
+        CancellationToken cancellationToken = default)
+    {
+        await _dbContext.Treatments.AddAsync(
+            treatment,
+            cancellationToken);
+    }
+
+    public async Task SaveChangesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
 }

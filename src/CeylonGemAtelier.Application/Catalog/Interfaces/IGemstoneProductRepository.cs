@@ -7,6 +7,10 @@ public interface IGemstoneProductRepository
     Task<IReadOnlyList<GemstoneProduct>> GetAllAsync(
         CancellationToken cancellationToken = default);
 
+    Task<GemstoneProduct?> GetByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default);
+
     Task<GemstoneProduct?> GetBySlugAsync(
         string slug,
         CancellationToken cancellationToken = default);
@@ -17,5 +21,8 @@ public interface IGemstoneProductRepository
 
     Task<bool> SlugExistsAsync(
         string slug,
+        CancellationToken cancellationToken = default);
+
+    Task SaveChangesAsync(
         CancellationToken cancellationToken = default);
 }

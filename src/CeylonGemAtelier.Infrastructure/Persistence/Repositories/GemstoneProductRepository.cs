@@ -25,6 +25,17 @@ public sealed class GemstoneProductRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<GemstoneProduct?> GetByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.GemstoneProducts
+            .Include(x => x.Items)
+            .FirstOrDefaultAsync(
+                x => x.Id == id,
+                cancellationToken);
+    }
+
     public async Task<GemstoneProduct?> GetBySlugAsync(
         string slug,
         CancellationToken cancellationToken = default)
@@ -56,5 +67,11 @@ public sealed class GemstoneProductRepository
             .AnyAsync(
                 x => x.Slug == slug,
                 cancellationToken);
+    }
+
+    public async Task SaveChangesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 }

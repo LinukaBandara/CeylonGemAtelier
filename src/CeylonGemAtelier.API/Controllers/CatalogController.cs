@@ -95,4 +95,65 @@ private readonly GemstoneCatalogDetailsService _catalogDetailsService;
             });
         }
     }
+
+    [HttpPut("products/{id:guid}")]
+    public async Task<IActionResult> UpdateProduct(
+        Guid id,
+        [FromBody] UpdateGemstoneProductRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            return Ok(await _catalogService.UpdateProductAsync(
+                id,
+                request,
+                cancellationToken));
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpPost("products/{id:guid}/publish")]
+    public async Task<IActionResult> PublishProduct(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            return Ok(await _catalogService.PublishProductAsync(
+                id,
+                cancellationToken));
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
+
+    [HttpPost("products/{id:guid}/unpublish")]
+    public async Task<IActionResult> UnpublishProduct(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            return Ok(await _catalogService.UnpublishProductAsync(
+                id,
+                cancellationToken));
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+    }
 }

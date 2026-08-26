@@ -2,14 +2,19 @@ import { useEffect, useMemo, useState } from "react";
 import {
   AlertCircle,
   ArrowUpRight,
+  BadgeCheck,
   Bookmark,
   Box,
+  CalendarClock,
   ChevronRight,
   CircleDollarSign,
   Download,
   Gem,
+  ImageOff,
+  Layers,
   PackageCheck,
   Plus,
+  Receipt,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api, unwrapCollection } from "../services/api";
@@ -69,16 +74,21 @@ function MetricCard({ label, value, subtitle, icon: Icon, accent = false }) {
 
 export default function Dashboard() {
   const [products, setProducts] = useState([]);
+  const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     let active = true;
 
-    api.get("/api/catalog/products")
-      .then((payload) => {
+    Promise.all([
+      api.get("/api/catalog/products").then((payload) => {
         if (active) setProducts(unwrapCollection(payload));
-      })
+      }),
+      api.get("/api/dashboard/summary").then((payload) => {
+        if (active) setSummary(payload);
+      }),
+    ])
       .catch((err) => {
         if (active) setError(err.message || "Unable to load dashboard.");
       })
@@ -105,6 +115,18 @@ export default function Dashboard() {
   );
 
   const metrics = useMemo(() => {
+    if (summary) {
+      return {
+        total: summary.totalItems,
+        available: summary.availableItems,
+        reserved: summary.reservedItems,
+        sold: summary.soldItems,
+        unavailable: summary.unavailableItems,
+        inventoryValue: summary.totalValueAmount,
+        currency: summary.totalValueCurrency,
+      };
+    }
+
     const available = items.filter((x) => x.status === "Available").length;
     const reserved = items.filter((x) => x.status === "Reserved").length;
     const sold = items.filter((x) => x.status === "Sold").length;
@@ -122,8 +144,9 @@ export default function Dashboard() {
       sold,
       unavailable,
       inventoryValue,
+      currency: "USD",
     };
-  }, [items]);
+  }, [items, summary]);
 
   const recentItems = useMemo(() => [...items].reverse().slice(0, 6), [items]);
 
@@ -187,8 +210,49 @@ export default function Dashboard() {
             <MetricCard label="In Stock" value={metrics.available} subtitle="Available for sale" icon={PackageCheck} />
             <MetricCard label="Reserved" value={metrics.reserved} subtitle="Currently held" icon={Bookmark} />
             <MetricCard label="Sold" value={metrics.sold} subtitle="Completed sales" icon={Box} />
-            <MetricCard label="Total Value" value={formatCurrency(metrics.inventoryValue)} subtitle="Current inventory value" icon={CircleDollarSign} accent />
+            <MetricCard label="Total Value" value={formatCurrency(metrics.inventoryValue, metrics.currency)} subtitle="Current inventory value" icon={CircleDollarSign} accent />
           </section>
+
+          {summary && (
+            <section className="dashboard-metrics">
+              <MetricCard label="Published Products" value={`${summary.publishedProducts}/${summary.totalProducts}`} subtitle="Live on the public site" icon={Layers} />
+              <MetricCard label="Pending Reservations" value={summary.pendingReservations} subtitle="Awaiting response" icon={CalendarClock} />
+              <MetricCard label="Unverified Certificates" value={summary.unverifiedCertificates} subtitle={`Of ${summary.totalCertificates} on record`} icon={BadgeCheck} />
+              <MetricCard label="Missing Media" value={summary.itemsMissingMedia} subtitle="Stones without imagery" icon={ImageOff} />
+              <MetricCard label="Sales Recorded" value={summary.totalSales} subtitle="Completed transactions" icon={Receipt} />
+            </section>
+          )}
+
+          <section className="dashboard-quick-actions">
+            <Link className="quick-action" to="/inventory?new=1">Add Gemstone</Link>
+            <Link className="quick-action" to="/products">Products</Link>
+            <Link className="quick-action" to="/certificates">Certificates</Link>
+            <Link className="quick-action" to="/media">Media</Link>
+            <Link className="quick-action" to="/reservations">Reservations</Link>
+            <Link className="quick-action" to="/sales">Sales</Link>
+          </section>
+
+          {summary && summary.recentActivity?.length > 0 && (
+            <section className="dashboard-main-panel">
+              <div className="panel-header">
+                <div>
+                  <span className="panel-eyebrow">Atelier Timeline</span>
+                  <h2>Recent Activity</h2>
+                </div>
+              </div>
+              <ul className="dashboard-activity">
+                {summary.recentActivity.map((activity, index) => (
+                  <li key={index}>
+                    <span className="activity-type">{activity.type}</span>
+                    <span className="activity-description">{activity.description}</span>
+                    <span className="activity-date">
+                      {new Date(activity.occurredAt).toLocaleDateString()}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           <section className="dashboard-main-panel">
             <div className="panel-header">

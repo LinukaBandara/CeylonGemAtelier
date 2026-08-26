@@ -14,4 +14,17 @@ public interface IGemstoneCatalogService
     Task<GemstoneProductDto> CreateProductAsync(
         CreateGemstoneProductRequest request,
         CancellationToken cancellationToken = default);
+
+    Task<GemstoneProductDto> UpdateProductAsync(
+        Guid id,
+        UpdateGemstoneProductRequest request,
+        CancellationToken cancellationToken = default);
+
+    Task<GemstoneProductDto> PublishProductAsync(
+        Guid id,
+        CancellationToken cancellationToken = default);
+
+    Task<GemstoneProductDto> UnpublishProductAsync(
+        Guid id,
+        CancellationToken cancellationToken = default);
 }
