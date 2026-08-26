@@ -22,4 +22,36 @@ public sealed class GemstoneTypeRepository : IGemstoneTypeRepository
             .OrderBy(x => x.Name)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<GemstoneType>> GetAllIncludingInactiveAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.GemstoneTypes
+            .AsNoTracking()
+            .OrderBy(x => x.Name)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<GemstoneType?> GetByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.GemstoneTypes
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    }
+
+    public async Task AddAsync(
+        GemstoneType gemstoneType,
+        CancellationToken cancellationToken = default)
+    {
+        await _dbContext.GemstoneTypes.AddAsync(
+            gemstoneType,
+            cancellationToken);
+    }
+
+    public async Task SaveChangesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
 }

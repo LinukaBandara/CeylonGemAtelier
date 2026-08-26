@@ -4,6 +4,9 @@ namespace CeylonGemAtelier.Application.Catalog.Interfaces;
 
 public interface IGemstoneMediaRepository
 {
+    Task<IReadOnlyList<GemstoneMedia>> GetAllAsync(
+        CancellationToken cancellationToken = default);
+
     Task<IReadOnlyList<GemstoneMedia>> GetByItemIdAsync(
         Guid gemstoneItemId,
         CancellationToken cancellationToken = default);

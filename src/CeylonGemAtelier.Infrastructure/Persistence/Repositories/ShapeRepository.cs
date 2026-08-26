@@ -20,4 +20,34 @@ public sealed class ShapeRepository : IShapeRepository
             .OrderBy(x => x.Name)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Shape>> GetAllIncludingInactiveAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Shapes
+            .AsNoTracking()
+            .OrderBy(x => x.Name)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<Shape?> GetByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Shapes
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    }
+
+    public async Task AddAsync(
+        Shape shape,
+        CancellationToken cancellationToken = default)
+    {
+        await _dbContext.Shapes.AddAsync(shape, cancellationToken);
+    }
+
+    public async Task SaveChangesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
 }

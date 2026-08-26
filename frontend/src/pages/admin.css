@@ -1,0 +1,59 @@
+.admin-page { color: #f5f1e8; }
+.admin-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 14px; padding: 6px 0 26px; border-bottom: 1px solid #302c27; }
+.admin-header span.admin-eyebrow { color: #c6a15b; font-size: 8px; letter-spacing: .18em; text-transform: uppercase; font-weight: 700; }
+.admin-header h1 { margin: 8px 0 6px; font: 500 34px/1 "Cormorant Garamond", serif; }
+.admin-header p { margin: 0; color: #766e64; font-size: 9.5px; }
+.admin-controls { display: flex; gap: 9px; padding: 18px 0; flex-wrap: wrap; }
+.admin-search { flex: 1; min-width: 220px; min-height: 36px; display: flex; align-items: center; gap: 9px; padding: 0 11px; border: 1px solid #302c27; background: #11110f; color: #756d63; }
+.admin-search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; color: #d8d0c4; font-size: 9px; }
+.admin-controls select { width: 160px; border: 1px solid #302c27; background: #11110f; color: #a69d91; padding: 0 10px; min-height: 36px; }
+.admin-surface { overflow-x: auto; border: 1px solid #302c27; background: #141413; }
+.admin-surface table { width: 100%; min-width: 760px; border-collapse: collapse; }
+.admin-surface th { height: 36px; padding: 0 14px; background: #11110f; color: #655e56; font-size: 7px; letter-spacing: .1em; text-align: left; text-transform: uppercase; }
+.admin-surface td { height: 54px; padding: 0 14px; border-top: 1px solid #24211e; color: #9d958a; font-size: 8.5px; }
+.admin-surface strong { color: #d5cdbf; font-weight: 600; }
+.admin-state { padding: 48px; color: #71695f; text-align: center; font-size: 9px; }
+.admin-state.error { color: #c48695; }
+.admin-badge { display: inline-flex; padding: 4px 7px; border-radius: 3px; font-size: 7px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.badge-on { background: rgba(112, 160, 120, .16); color: #8fbf98; }
+.badge-off { background: rgba(150, 140, 128, .14); color: #968c80; }
+.badge-gold { background: rgba(198, 161, 91, .16); color: #c6a15b; }
+.badge-red { background: rgba(178, 96, 108, .16); color: #c48695; }
+.badge-blue { background: rgba(96, 130, 178, .16); color: #86a0c4; }
+.admin-button { display: inline-flex; align-items: center; gap: 7px; min-height: 34px; padding: 0 14px; border: 1px solid #302c27; background: #11110f; color: #c9c0b3; font-size: 8.5px; font-weight: 600; letter-spacing: .06em; cursor: pointer; }
+.admin-button:hover { border-color: #c6a15b; color: #e8dfd0; }
+.admin-button.primary { background: #5c2231; border-color: #7a2f42; color: #f0e6da; }
+.admin-button.primary:hover { background: #6d293b; }
+.admin-row-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.admin-row-actions button { min-height: 26px; padding: 0 9px; border: 1px solid #302c27; background: transparent; color: #a69d91; font-size: 7.5px; letter-spacing: .05em; cursor: pointer; }
+.admin-row-actions button:hover { border-color: #c6a15b; color: #e8dfd0; }
+.admin-row-actions button:disabled { opacity: .4; cursor: not-allowed; }
+.admin-modal-backdrop { position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-start; justify-content: center; padding: 60px 16px; background: rgba(8, 8, 7, .78); overflow-y: auto; }
+.admin-modal { width: 100%; max-width: 560px; border: 1px solid #3a352e; background: #161513; padding: 26px; }
+.admin-modal h2 { margin: 0 0 18px; font: 500 22px/1 "Cormorant Garamond", serif; color: #ece5d8; }
+.admin-form { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.admin-form .full { grid-column: 1 / -1; }
+.admin-form label { display: flex; flex-direction: column; gap: 5px; color: #8a8177; font-size: 7.5px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; }
+.admin-form input, .admin-form select, .admin-form textarea { min-height: 34px; padding: 6px 10px; border: 1px solid #302c27; background: #11110f; color: #d8d0c4; font-size: 9px; outline: 0; }
+.admin-form textarea { min-height: 70px; resize: vertical; font-family: inherit; }
+.admin-form input:focus, .admin-form select:focus, .admin-form textarea:focus { border-color: #c6a15b; }
+.admin-form .checkbox-row { flex-direction: row; align-items: center; gap: 8px; }
+.admin-form .checkbox-row input { min-height: 0; width: 14px; height: 14px; }
+.admin-modal-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 20px; }
+.admin-modal .form-error { grid-column: 1 / -1; color: #c48695; font-size: 8.5px; }
+.admin-tabs { display: flex; gap: 6px; padding: 18px 0 0; flex-wrap: wrap; }
+.admin-tabs button { min-height: 32px; padding: 0 14px; border: 1px solid #302c27; background: transparent; color: #8a8177; font-size: 8px; letter-spacing: .08em; text-transform: uppercase; font-weight: 700; cursor: pointer; }
+.admin-tabs button.active { border-color: #c6a15b; color: #c6a15b; background: rgba(198, 161, 91, .08); }
+.admin-group { border: 1px solid #302c27; background: #141413; margin-bottom: 14px; }
+.admin-group-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 14px; background: #11110f; border-bottom: 1px solid #24211e; }
+.admin-group-head strong { color: #d5cdbf; font-size: 9.5px; }
+.admin-group-head span { color: #766e64; font-size: 8px; }
+.media-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; padding: 14px; }
+.media-card { border: 1px solid #302c27; background: #11110f; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.media-card .media-preview { height: 90px; display: flex; align-items: center; justify-content: center; background: #1b1a17; color: #655e56; overflow: hidden; }
+.media-card .media-preview img { width: 100%; height: 100%; object-fit: cover; }
+.media-card .media-url { color: #9d958a; font-size: 7.5px; word-break: break-all; }
+.settings-card { border: 1px solid #302c27; background: #141413; padding: 22px; margin-top: 18px; }
+.settings-card h2 { margin: 0 0 16px; font: 500 20px/1 "Cormorant Garamond", serif; color: #d5cdbf; }
+.settings-save-note { color: #8fbf98; font-size: 8.5px; }
+@media (max-width: 700px) { .admin-controls { flex-direction: column; } .admin-controls select { width: 100%; height: 36px; } .admin-form { grid-template-columns: 1fr; } .admin-header { flex-direction: column; align-items: flex-start; } }

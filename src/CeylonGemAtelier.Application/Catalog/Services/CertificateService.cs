@@ -14,6 +14,15 @@ public sealed class CertificateService
         _repository = repository;
     }
 
+    public async Task<IReadOnlyList<CertificateDto>> GetAllAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var certificates = await _repository.GetAllAsync(
+            cancellationToken);
+
+        return certificates.Select(Map).ToList();
+    }
+
     public async Task<IReadOnlyList<CertificateDto>> GetByItemIdAsync(
         Guid gemstoneItemId,
         CancellationToken cancellationToken = default)

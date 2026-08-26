@@ -20,4 +20,36 @@ public sealed class LaboratoryRepository : ILaboratoryRepository
             .OrderBy(x => x.Name)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Laboratory>> GetAllIncludingInactiveAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Laboratories
+            .AsNoTracking()
+            .OrderBy(x => x.Name)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<Laboratory?> GetByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Laboratories
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    }
+
+    public async Task AddAsync(
+        Laboratory laboratory,
+        CancellationToken cancellationToken = default)
+    {
+        await _dbContext.Laboratories.AddAsync(
+            laboratory,
+            cancellationToken);
+    }
+
+    public async Task SaveChangesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
 }

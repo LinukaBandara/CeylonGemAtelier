@@ -54,6 +54,18 @@ builder.Services.AddScoped<IOriginRepository, OriginRepository>();
 builder.Services.AddScoped<ILaboratoryRepository, LaboratoryRepository>();
 
 builder.Services.AddScoped<ReferenceDataService>();
+builder.Services.AddScoped<ReferenceDataAdminService>();
+
+builder.Services.AddScoped<IReservationRepository, ReservationRepository>();
+builder.Services.AddScoped<ReservationService>();
+
+builder.Services.AddScoped<ISaleRepository, SaleRepository>();
+builder.Services.AddScoped<SaleService>();
+
+builder.Services.AddScoped<IAtelierSettingsRepository, AtelierSettingsRepository>();
+builder.Services.AddScoped<AtelierSettingsService>();
+
+builder.Services.AddScoped<DashboardService>();
 
 var app = builder.Build();
 

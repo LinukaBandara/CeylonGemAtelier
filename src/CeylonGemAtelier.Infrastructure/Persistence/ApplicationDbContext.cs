@@ -31,6 +31,12 @@ public sealed class ApplicationDbContext : DbContext
 
     public DbSet<Treatment> Treatments => Set<Treatment>();
 
+    public DbSet<Reservation> Reservations => Set<Reservation>();
+
+    public DbSet<Sale> Sales => Set<Sale>();
+
+    public DbSet<AtelierSettings> AtelierSettings => Set<AtelierSettings>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(

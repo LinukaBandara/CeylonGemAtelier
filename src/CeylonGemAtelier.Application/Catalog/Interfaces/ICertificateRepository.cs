@@ -4,6 +4,9 @@ namespace CeylonGemAtelier.Application.Catalog.Interfaces;
 
 public interface ICertificateRepository
 {
+    Task<IReadOnlyList<Certificate>> GetAllAsync(
+        CancellationToken cancellationToken = default);
+
     Task<IReadOnlyList<Certificate>> GetByItemIdAsync(
         Guid gemstoneItemId,
         CancellationToken cancellationToken = default);

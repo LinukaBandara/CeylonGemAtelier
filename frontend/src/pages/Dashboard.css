@@ -354,3 +354,13 @@
   .cga-metric-card strong { margin-top: 13px; font-size: 24px; }
   .cga-metric-card.accent { grid-column: 1 / -1; }
 }
+
+.dashboard-quick-actions { display: flex; gap: 9px; flex-wrap: wrap; margin: 4px 0 6px; }
+.quick-action { display: inline-flex; align-items: center; min-height: 32px; padding: 0 16px; border: 1px solid #302c27; background: #141413; color: #a69d91; font-size: 8px; letter-spacing: .1em; text-transform: uppercase; font-weight: 700; text-decoration: none; transition: border-color 160ms ease, color 160ms ease; }
+.quick-action:hover { border-color: #c6a15b; color: #c6a15b; }
+.dashboard-activity { list-style: none; margin: 0; padding: 6px 0 12px; }
+.dashboard-activity li { display: flex; align-items: center; gap: 14px; padding: 10px 18px; border-top: 1px solid #24211e; }
+.dashboard-activity li:first-child { border-top: 0; }
+.activity-type { min-width: 86px; color: #c6a15b; font-size: 7px; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; }
+.activity-description { flex: 1; color: #9d958a; font-size: 8.5px; }
+.activity-date { color: #5f5850; font-size: 7.5px; }

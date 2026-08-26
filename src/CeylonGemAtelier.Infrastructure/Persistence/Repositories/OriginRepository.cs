@@ -21,4 +21,35 @@ public sealed class OriginRepository : IOriginRepository
             .ThenBy(x => x.Region)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<IReadOnlyList<Origin>> GetAllIncludingInactiveAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Origins
+            .AsNoTracking()
+            .OrderBy(x => x.Country)
+            .ThenBy(x => x.Region)
+            .ToListAsync(cancellationToken);
+    }
+
+    public async Task<Origin?> GetByIdAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Origins
+            .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+    }
+
+    public async Task AddAsync(
+        Origin origin,
+        CancellationToken cancellationToken = default)
+    {
+        await _dbContext.Origins.AddAsync(origin, cancellationToken);
+    }
+
+    public async Task SaveChangesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        await _dbContext.SaveChangesAsync(cancellationToken);
+    }
 }

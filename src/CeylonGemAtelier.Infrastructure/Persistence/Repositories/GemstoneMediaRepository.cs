@@ -14,6 +14,16 @@ public sealed class GemstoneMediaRepository : IGemstoneMediaRepository
         _dbContext = dbContext;
     }
 
+    public async Task<IReadOnlyList<GemstoneMedia>> GetAllAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.GemstoneMedia
+            .AsNoTracking()
+            .OrderBy(x => x.GemstoneItemId)
+            .ThenBy(x => x.SortOrder)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyList<GemstoneMedia>> GetByItemIdAsync(
         Guid gemstoneItemId,
         CancellationToken cancellationToken = default)

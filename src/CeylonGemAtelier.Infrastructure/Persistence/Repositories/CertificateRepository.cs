@@ -14,6 +14,15 @@ public sealed class CertificateRepository : ICertificateRepository
         _dbContext = dbContext;
     }
 
+    public async Task<IReadOnlyList<Certificate>> GetAllAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Certificates
+            .AsNoTracking()
+            .OrderByDescending(x => x.IssueDate)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<IReadOnlyList<Certificate>> GetByItemIdAsync(
         Guid gemstoneItemId,
         CancellationToken cancellationToken = default)
