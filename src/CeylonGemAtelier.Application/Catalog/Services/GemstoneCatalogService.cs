@@ -21,7 +21,7 @@ public sealed class GemstoneCatalogService : IGemstoneCatalogService
             cancellationToken);
 
         return products
-            .Select(MapProduct)
+            .Where(product => product.IsPublished).Select(MapProduct)
             .ToList();
     }
 

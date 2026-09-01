@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Plus, Search } from "lucide-react";
 import { api, unwrapCollection } from "../services/api";
+import { useToast } from "../components/Toast";
+import StatusBadge from "../components/StatusBadge";
 import "./admin.css";
 
 const STATUS_BADGES = {
@@ -21,6 +23,7 @@ const emptyForm = {
 };
 
 export default function Reservations() {
+  const toast = useToast();
   const [reservations, setReservations] = useState([]);
   const [items, setItems] = useState([]);
   const [query, setQuery] = useState("");
@@ -62,9 +65,11 @@ export default function Reservations() {
   const act = async (reservation, action) => {
     try {
       await api.post(`/api/reservations/${reservation.id}/${action}`);
+      toast.success(`Reservation ${action.replaceAll('-', ' ')}`);
       await load();
     } catch (err) {
       setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -73,9 +78,11 @@ export default function Reservations() {
     try {
       await api.put(`/api/reservations/${notesFor.id}/notes`, { internalNotes: notesDraft || null });
       setNotesFor(null);
+      toast.success("Notes saved");
       await load();
     } catch (err) {
       setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -94,9 +101,11 @@ export default function Reservations() {
       });
       setCreating(false);
       setForm(emptyForm);
+      toast.success("Reservation created");
       await load();
     } catch (err) {
       setFormError(err.message);
+      toast.error(err.message);
     } finally {
       setSaving(false);
     }

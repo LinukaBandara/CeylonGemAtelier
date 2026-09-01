@@ -1,4 +1,4 @@
-using CeylonGemAtelier.Domain.Catalog.Entities;
+﻿using CeylonGemAtelier.Domain.Catalog.Entities;
 using CeylonGemAtelier.Domain.Common.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
@@ -302,8 +302,8 @@ public static class CatalogSeedData
 
     private static void SeedProducts(ApplicationDbContext db)
     {
-        AddIfMissing(
-            db.GemstoneProducts,
+        EnsurePublishedProduct(
+            db,
             BlueSapphireProductId,
             () => new GemstoneProduct(
                 "Ceylon Blue Sapphire",
@@ -315,8 +315,8 @@ public static class CatalogSeedData
                     "Blue Sapphire"),
                 "Natural Ceylon blue sapphire from Sri Lanka."));
 
-        AddIfMissing(
-            db.GemstoneProducts,
+        EnsurePublishedProduct(
+            db,
             PadparadschaProductId,
             () => new GemstoneProduct(
                 "Ceylon Padparadscha Sapphire",
@@ -328,8 +328,8 @@ public static class CatalogSeedData
                     "Padparadscha"),
                 "Rare pink-orange Ceylon Padparadscha sapphire."));
 
-        AddIfMissing(
-            db.GemstoneProducts,
+        EnsurePublishedProduct(
+            db,
             RubyProductId,
             () => new GemstoneProduct(
                 "Ceylon Ruby",
@@ -342,6 +342,32 @@ public static class CatalogSeedData
                 "Natural Sri Lankan ruby."));
     }
 
+    private static void EnsurePublishedProduct(
+        ApplicationDbContext db,
+        Guid id,
+        Func<GemstoneProduct> factory)
+    {
+        var product = db.GemstoneProducts
+            .FirstOrDefault(x =>
+                EF.Property<Guid>(x, "Id") == id);
+
+        if (product == null)
+        {
+            product = factory();
+
+            var property = typeof(GemstoneProduct)
+                .GetProperty("Id");
+
+            property!.SetValue(product, id);
+
+            db.GemstoneProducts.Add(product);
+        }
+
+        if (!product.IsPublished)
+        {
+            product.Publish();
+        }
+    }
     private static void SeedItems(ApplicationDbContext db)
     {
         AddIfMissing(
@@ -437,3 +463,4 @@ public static class CatalogSeedData
         }
     }
 }
+

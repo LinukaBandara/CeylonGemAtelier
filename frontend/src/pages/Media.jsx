@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Film, Image as ImageIcon, Box as BoxIcon, Plus } from "lucide-react";
 import { api, unwrapCollection } from "../services/api";
+import { useToast } from "../components/Toast";
 import "./admin.css";
 
 const MEDIA_TYPES = [
@@ -29,6 +30,7 @@ function TypeIcon({ type }) {
 }
 
 export default function Media() {
+  const toast = useToast();
   const [media, setMedia] = useState([]);
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -70,9 +72,11 @@ export default function Media() {
   const setPrimary = async (entry) => {
     try {
       await api.post(`/api/catalog/items/${entry.gemstoneItemId}/media/${entry.id}/primary`);
+      toast.success("Primary media updated");
       await load();
     } catch (err) {
       setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -91,9 +95,11 @@ export default function Media() {
       });
       setCreating(false);
       setForm(emptyForm);
+      toast.success("Media asset added");
       await load();
     } catch (err) {
       setFormError(err.message);
+      toast.error(err.message);
     } finally {
       setSaving(false);
     }
@@ -116,7 +122,7 @@ export default function Media() {
         {loading && <div className="admin-state">Loading media library...</div>}
         {error && <div className="admin-state error">{error}</div>}
         {!loading && !error && grouped.length === 0 && (
-          <div className="admin-surface"><div className="admin-state">No media has been uploaded yet.</div></div>
+          <div className="admin-surface"><div className="admin-empty"><strong>No media yet</strong><p>Upload photography, film or 3D captures for registered gemstones.</p></div></div>
         )}
         {!loading && !error && grouped.map(([itemId, entries]) => (
           <section className="admin-group" key={itemId}>

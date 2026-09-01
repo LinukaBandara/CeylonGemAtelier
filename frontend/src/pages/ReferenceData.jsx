@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Plus, Search } from "lucide-react";
 import { api, unwrapCollection } from "../services/api";
+import { useToast } from "../components/Toast";
+import StatusBadge from "../components/StatusBadge";
 import "./admin.css";
 
 const COLLECTIONS = [
@@ -81,6 +83,7 @@ const COLLECTIONS = [
 ];
 
 export default function ReferenceData() {
+  const toast = useToast();
   const [tab, setTab] = useState(COLLECTIONS[0]);
   const [entries, setEntries] = useState([]);
   const [query, setQuery] = useState("");
@@ -133,13 +136,16 @@ export default function ReferenceData() {
       const body = tab.body(form);
       if (editing === "new") {
         await api.post(`/api/catalog/reference/admin/${tab.key}`, body);
+        toast.success("Entry created");
       } else {
         await api.put(`/api/catalog/reference/admin/${tab.key}/${editing}`, body);
+        toast.success("Entry updated");
       }
       setEditing(null);
       await load(tab);
     } catch (err) {
       setFormError(err.message);
+      toast.error(err.message);
     } finally {
       setSaving(false);
     }
@@ -153,6 +159,7 @@ export default function ReferenceData() {
       await load(tab);
     } catch (err) {
       setError(err.message);
+      toast.error(err.message);
     }
   };
 

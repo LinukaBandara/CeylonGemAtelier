@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { Plus, Search } from "lucide-react";
 import { api, unwrapCollection } from "../services/api";
+import { useToast } from "../components/Toast";
+import StatusBadge from "../components/StatusBadge";
 import "./admin.css";
 
 const PAYMENT_BADGES = {
@@ -28,6 +30,7 @@ function formatMoney(amount, currency) {
 }
 
 export default function Sales() {
+  const toast = useToast();
   const [sales, setSales] = useState([]);
   const [items, setItems] = useState([]);
   const [query, setQuery] = useState("");
@@ -65,9 +68,11 @@ export default function Sales() {
   const setPayment = async (sale, action) => {
     try {
       await api.post(`/api/sales/${sale.id}/${action}`);
+      toast.success("Sale updated");
       await load();
     } catch (err) {
       setError(err.message);
+      toast.error(err.message);
     }
   };
 
@@ -87,9 +92,11 @@ export default function Sales() {
       });
       setCreating(false);
       setForm(emptyForm);
+      toast.success("Sale recorded");
       await load();
     } catch (err) {
       setFormError(err.message);
+      toast.error(err.message);
     } finally {
       setSaving(false);
     }
