@@ -1,357 +1,157 @@
-# Ceylon Gem Atelier - Deployment Guide
+# Ceylon Gem Atelier — Deployment Guide
 
-## Production Deployment Checklist
+This guide covers production deployment for the API, admin dashboard, and public website.
 
-### 1. **Database Preparation**
-- [ ] Create PostgreSQL database on production server
-- [ ] Database name: `ceylon_gem_atelier`
-- [ ] Run migrations: `dotnet ef database update --project src/CeylonGemAtelier.Infrastructure`
-- [ ] Verify all tables created successfully
-- [ ] Set up automated daily backups
-- [ ] Create read-only replica for reporting (optional)
-- [ ] Configure connection pooling (max 20 connections)
+## Production checklist
 
-### 2. **Configuration Management**
-- [ ] Create `appsettings.Production.json` with production values:
-  ```json
-  {
-    "Logging": {
-      "LogLevel": {
-        "Default": "Warning",
-        "Microsoft.AspNetCore": "Error"
-      }
-    },
-    "ConnectionStrings": {
-      "DefaultConnection": "Host=prod-db.example.com;Port=5432;Database=ceylon_gem_atelier;Username=app_user;Password=STRONG_PASSWORD_HERE;Connection Timeout=30;Command Timeout=30;"
-    },
-    "Jwt": {
-      "SecretKey": "GENERATE_STRONG_SECRET_KEY_MIN_32_CHARS",
-      "Issuer": "CeylonGemAtelier",
-      "Audience": "CeylonGemAtelier.API",
-      "ExpiryMinutes": 120
-    },
-    "CorsPolicy": {
-      "AllowedOrigins": ["https://atelier.example.com", "https://www.atelier.example.com"]
-    }
-  }
-  ```
-- [ ] Store secrets in Azure Key Vault or environment variables, NOT in config files
-- [ ] Set environment variable: `ASPNETCORE_ENVIRONMENT=Production`
-- [ ] Configure log file paths with adequate disk space
-- [ ] Set up log rotation policy (daily, retain 30 days)
+### 1. Database
+- [ ] Provision PostgreSQL 18+ (or a supported managed PostgreSQL service).
+- [ ] Create a dedicated application database/user with least-privilege access.
+- [ ] Configure the production connection string through environment variables or a secret manager.
+- [ ] Apply the committed EF Core migrations before release.
+- [ ] Configure automated backups and test restores.
+- [ ] Enable TLS for database connections when supported by the provider.
 
-### 3. **API Server Deployment**
-- [ ] Build release binary: `dotnet publish -c Release -o ./publish`
-- [ ] Deploy to hosting (Azure App Service, Docker, IIS, etc.)
-- [ ] Configure HTTPS/TLS with valid certificate
-- [ ] Set up health check endpoint monitoring
-- [ ] Enable detailed error logging to secure location
-- [ ] Configure automatic restart on failure
-- [ ] Set up performance monitoring (application insights, New Relic, etc.)
+### 2. Secrets and configuration
+**Never commit production passwords, JWT secrets, API keys, or other credentials.**
 
-### 4. **Frontend Deployment**
-- [ ] **Dashboard (Vite + React)**
-  - [ ] Update `.env.production`: `VITE_API_BASE_URL=https://api.atelier.example.com`
-  - [ ] Build: `npm run build` (outputs to `dist/`)
-  - [ ] Deploy to CDN or static hosting
-  - [ ] Enable gzip compression
-  - [ ] Set cache headers appropriately
-  
-- [ ] **Public Website (Next.js)**
-  - [ ] Update `.env.production`: `NEXT_PUBLIC_API_URL=https://api.atelier.example.com`
-  - [ ] Build: `npm run build`
-  - [ ] Deploy to Vercel, Azure Static Web Apps, or self-hosted
-  - [ ] Configure ISR (Incremental Static Regeneration) for product pages
-  - [ ] Set up CDN for static assets
+Configure these outside source control:
+- `ASPNETCORE_ENVIRONMENT=Production`
+- `ConnectionStrings__DefaultConnection=<production PostgreSQL connection string>`
+- `Jwt__SecretKey=<random secret of at least 32 characters>`
+- `Jwt__Issuer=CeylonGemAtelier`
+- `Jwt__Audience=CeylonGemAtelier.API`
+- `Jwt__ExpiryMinutes=60` (or the approved production value)
+- `CorsPolicy__AllowedOrigins__0=https://<admin-domain>`
+- Additional `CorsPolicy__AllowedOrigins__N` entries only for trusted browser origins.
+- `Auth__Users` containing configured application users, supplied through a secret manager/environment variable. Do not store real passwords in this repository.
 
-### 5. **Security Hardening**
-- [ ] **HTTPS/TLS**
-  - [ ] Obtain valid SSL certificate (Let's Encrypt, commercial CA)
-  - [ ] Enforce HTTPS redirect (HTTP → HTTPS)
-  - [ ] Set HSTS header: `Strict-Transport-Security: max-age=31536000; includeSubDomains`
-  
-- [ ] **API Security**
-  - [ ] Enable CORS only for trusted origins
-  - [ ] Implement rate limiting (e.g., 100 requests per minute per IP)
-  - [ ] Enable request logging for audit trail
-  - [ ] Configure firewall rules to block suspicious traffic
-  - [ ] Use API gateway for additional protection
-  
-- [ ] **Database Security**
-  - [ ] Use dedicated database user with limited permissions
-  - [ ] Enable SSL for database connections
-  - [ ] Regular security patches and updates
-  - [ ] Database encryption at rest (if supported by provider)
-  - [ ] Restrict database access to application servers only
+The API rejects the default JWT placeholder and requires a production database connection string.
 
-- [ ] **Secrets Management**
-  - [ ] Never commit secrets to version control
-  - [ ] Use environment variables or secrets vault
-  - [ ] Rotate JWT secret key regularly (restart required)
-  - [ ] Monitor for exposed credentials in logs
-
-### 6. **Monitoring & Alerting**
-- [ ] Set up application monitoring:
-  - [ ] CPU and memory usage
-  - [ ] Response time metrics
-  - [ ] Error rates and exceptions
-  - [ ] Database query performance
-  
-- [ ] Configure alerts for:
-  - [ ] High error rate (>5%)
-  - [ ] Response time exceeds 2 seconds
-  - [ ] Database connection failures
-  - [ ] Disk space running low
-  - [ ] Authentication failures (potential attacks)
-
-- [ ] Set up centralized logging:
-  - [ ] Application logs (Serilog)
-  - [ ] Web server logs
-  - [ ] Database audit logs
-  - [ ] Access logs for compliance
-
-### 7. **Backup & Disaster Recovery**
-- [ ] **Database Backups**
-  - [ ] Full backup daily
-  - [ ] Transaction logs every 15 minutes
-  - [ ] Test restore procedure monthly
-  - [ ] Store backups in geographically separate location
-  
-- [ ] **Application Backups**
-  - [ ] Version control all code
-  - [ ] Tag all production releases
-  - [ ] Maintain rollback plan for each version
-
-- [ ] **Disaster Recovery Plan**
-  - [ ] Document RTO (Recovery Time Objective): < 4 hours
-  - [ ] Document RPO (Recovery Point Objective): < 1 hour
-  - [ ] Test failover procedures quarterly
-  - [ ] Maintain runbook for common incidents
-
-### 8. **Load Testing**
+### 3. API deployment
 ```bash
-# Using Apache Bench
-ab -n 1000 -c 10 https://api.atelier.example.com/api/health
-
-# Using k6 (load testing)
-k6 run load-test.js
+dotnet restore CeylonGemAtelier.slnx
+dotnet build CeylonGemAtelier.slnx --configuration Release
+dotnet test CeylonGemAtelier.slnx --configuration Release
+dotnet publish src/CeylonGemAtelier.API/CeylonGemAtelier.API.csproj -c Release -o ./publish
 ```
 
-Expected performance targets:
-- API response time: <500ms (p95)
-- Throughput: >1000 requests/second
-- Error rate: <0.1%
+Deploy the published API to Railway, Render, Azure, Docker, IIS, or another .NET-compatible host.
 
-### 9. **Smoke Tests** (Post-Deployment)
-- [ ] Health check endpoint responds (200 OK)
-- [ ] Login endpoint accepts valid credentials
-- [ ] Public catalog endpoint returns products
-- [ ] Admin endpoints require authentication
-- [ ] Protected endpoints reject unauthorized requests
-- [ ] Database queries execute successfully
-- [ ] Logging is working
+Production requirements:
+- HTTPS/TLS enabled.
+- `/api/health` monitored.
+- Secrets supplied by the hosting platform/secret manager.
+- Production exception details disabled for clients.
+- Application and infrastructure logs monitored.
+- Automatic restart/health checks enabled where supported.
 
-### 10. **Post-Deployment Verification**
+### 4. Admin dashboard
+The Vite/React dashboard supports either same-origin `/api` routing or a separate API origin.
+
+For a separate API:
+```text
+VITE_API_BASE_URL=https://api.<your-domain>
+```
+
+Build:
 ```bash
-# Health check
-curl https://api.atelier.example.com/api/health
-
-# Authentication test
-curl -X POST https://api.atelier.example.com/api/auth/login \
-  -H "Content-Type: application/json" \
-  -d '{"username":"admin","password":"admin123"}'
-
-# Catalog access
-curl https://api.atelier.example.com/api/catalog/products
-
-# Admin access (should require auth)
-curl -X POST https://api.atelier.example.com/api/catalog/products \
-  -H "Authorization: Bearer TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{...}'
+cd frontend
+npm ci
+npm run lint
+npm run build
 ```
 
-### 11. **Scaling Considerations**
-- **Vertical Scaling**: Increase server RAM/CPU
-- **Horizontal Scaling**: Multiple API instances behind load balancer
-- **Database Scaling**: Read replicas for reporting queries
-- **Caching**: Redis for session management and frequently accessed data
-- **CDN**: Content delivery network for frontend assets
+Deploy the generated `dist/` directory to your static host/CDN.
 
-### 12. **Maintenance Schedule**
-- **Weekly**: Check logs for errors, monitor performance metrics
-- **Monthly**: Security patch updates, backup verification
-- **Quarterly**: Load testing, disaster recovery drill
-- **Annually**: Full security audit, infrastructure review
+### 5. Public website
+The Next.js public website remains separate from the admin dashboard.
 
-## Docker Deployment Example
-
-```dockerfile
-# Dockerfile
-FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
-
-WORKDIR /app
-COPY ./publish .
-
-EXPOSE 80 443
-ENV ASPNETCORE_ENVIRONMENT=Production
-
-ENTRYPOINT ["dotnet", "CeylonGemAtelier.API.dll"]
+For a separate API:
+```text
+NEXT_PUBLIC_API_URL=https://api.<your-domain>
 ```
 
+Build:
 ```bash
-# Build and push
-docker build -t ceylongematel/api:1.0 .
-docker push ceylongematel/api:1.0
-
-# Run container
-docker run -d \
-  -p 443:443 \
-  -e ConnectionStrings__DefaultConnection="Host=db.example.com;..." \
-  -e Jwt__SecretKey="STRONG_SECRET_HERE" \
-  -e ASPNETCORE_ENVIRONMENT=Production \
-  ceylongematel/api:1.0
+cd public-web
+npm ci
+npm run lint
+npm run build
 ```
 
-## Kubernetes Deployment Example
+Deploy to Vercel or another Next.js-compatible host.
 
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: api-secrets
-type: Opaque
-stringData:
-  connectionString: "Host=db.example.com;..."
-  jwtSecretKey: "STRONG_SECRET_HERE"
+### 6. Security hardening
+- [ ] HTTPS everywhere.
+- [ ] Restrict CORS to known browser origins.
+- [ ] Add rate limiting at the API/edge layer before exposing login publicly.
+- [ ] Keep database credentials out of source control.
+- [ ] Rotate JWT secrets according to the operational policy.
+- [ ] Use a dedicated production database account.
+- [ ] Monitor failed authentication attempts without logging passwords or tokens.
+- [ ] Keep .NET, Node, PostgreSQL, and dependencies patched.
 
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ceylon-gem-atelier-api
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: ceylon-gem-atelier-api
-  template:
-    metadata:
-      labels:
-        app: ceylon-gem-atelier-api
-    spec:
-      containers:
-      - name: api
-        image: ceylongematel/api:1.0
-        ports:
-        - containerPort: 80
-          name: http
-        - containerPort: 443
-          name: https
-        env:
-        - name: ASPNETCORE_ENVIRONMENT
-          value: "Production"
-        - name: ConnectionStrings__DefaultConnection
-          valueFrom:
-            secretKeyRef:
-              name: api-secrets
-              key: connectionString
-        - name: Jwt__SecretKey
-          valueFrom:
-            secretKeyRef:
-              name: api-secrets
-              key: jwtSecretKey
-        livenessProbe:
-          httpGet:
-            path: /api/health
-            port: 80
-          initialDelaySeconds: 30
-          periodSeconds: 10
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ceylon-gem-atelier-api
-spec:
-  type: LoadBalancer
-  ports:
-  - name: https
-    port: 443
-    targetPort: 443
-  - name: http
-    port: 80
-    targetPort: 80
-  selector:
-    app: ceylon-gem-atelier-api
+### 7. Smoke tests after deployment
+```text
+GET /api/health                         -> 200
+POST /api/auth/login (valid config)    -> 200
+POST /api/auth/login (bad password)    -> 401
+Protected endpoint without JWT         -> 401/403
+Public catalog endpoint                -> expected catalog response
 ```
 
-## Monitoring & Logging Configuration
+Do not put real production credentials in smoke-test commands or documentation.
 
-### Application Insights (Azure)
-```csharp
-builder.Services.AddApplicationInsightsTelemetry();
-```
+### 8. CI/CD
+GitHub Actions validates:
+- .NET restore/build/test
+- Admin frontend install/lint/build
+- Public website install/lint/build
 
-### Elasticsearch + Kibana
-```csharp
-builder.Host.UseSerilog((context, config) =>
-{
-    config
-        .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("https://elasticsearch:9200"))
-        {
-            AutoRegisterTemplate = true,
-            IndexFormat = "ceylon-gem-atelier-{0:yyyy.MM.dd}"
-        });
-});
-```
+A release should only be promoted after the workflow is green.
 
-## Performance Optimization
+### 9. Backups and recovery
+- [ ] Daily database backups at minimum.
+- [ ] Provider-supported point-in-time recovery where appropriate.
+- [ ] Monthly restore test.
+- [ ] Production release tags.
+- [ ] Document rollback procedure.
+- [ ] Keep uploaded gemstone media backed up separately from the database if object storage is used.
 
-1. **Caching Strategy**
-   - Cache reference data (shapes, treatments, origins) for 1 hour
-   - Cache product catalog for 30 minutes
-   - Cache user sessions in Redis
+### 10. Performance
+Start with the simplest reliable deployment. Add Redis, read replicas, CDN caching, pagination, or horizontal API scaling only when measured traffic requires them.
 
-2. **Database Optimization**
-   - Add indexes on frequently queried columns (stock number, status)
-   - Use database query profiling to identify slow queries
-   - Consider materialized views for reports
+Recommended monitoring targets:
+- API error rate
+- p95 response time
+- database connection health
+- CPU/memory usage
+- authentication failures
+- storage usage
 
-3. **API Optimization**
-   - Enable response compression (gzip)
-   - Implement pagination for large collections
-   - Use projection to return only needed fields
-   - Consider GraphQL for flexible queries
+## Same-domain architecture
 
-## Rollback Procedure
+A reverse proxy can serve:
+- `/` → frontend/public website
+- `/api/*` → ASP.NET Core API
 
-If issues occur after deployment:
-1. Identify the issue through monitoring/logs
-2. Stop current deployment
-3. Deploy previous stable version
-4. Verify functionality
-5. Investigate root cause
-6. Plan fix and redeploy
+This avoids browser CORS for same-origin requests.
 
-## Compliance & Audit
+## Separate-domain architecture
 
-- [ ] GDPR compliance (data privacy)
-- [ ] PCI DSS compliance (if handling payments)
-- [ ] SOC 2 audit readiness
-- [ ] Data retention policies documented
-- [ ] Access logs retained for 90 days
-- [ ] Regular penetration testing
+Example:
+- Admin: `https://admin.<your-domain>`
+- Public: `https://www.<your-domain>`
+- API: `https://api.<your-domain>`
+
+Configure the API CORS allow-list with only the actual admin/public origins and set the corresponding frontend environment variables.
+
+## Production authentication note
+
+The authentication endpoint reads configured users instead of embedding credentials in source code. Production credentials must be supplied through a secret manager or environment configuration. For a larger deployment, replace this lightweight configuration-backed authentication with a dedicated identity provider/user store and password hashing.
 
 ---
 
-**Last Updated**: 2024
-**Deployment Version**: 1.0
-**Support**: deployment-support@atelier.example.com
+**Deployment guide status:** production-oriented and credential-free.
+**Last reviewed:** September 2026
