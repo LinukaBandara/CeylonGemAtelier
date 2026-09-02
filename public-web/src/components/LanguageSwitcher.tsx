@@ -1,26 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore, useState } from "react";
 import { languages } from "@/data/testimonials";
 
+const subscribeLanguage = (callback: () => void) => {
+  window.addEventListener("storage", callback);
+  return () => window.removeEventListener("storage", callback);
+};
+
+const getLanguageSnapshot = () => localStorage.getItem("cga-language") || "en";
+const getServerLanguageSnapshot = () => "en";
+
 export function LanguageSwitcher() {
-  const [currentLanguage, setCurrentLanguage] = useState("en");
-  const [isLoaded, setIsLoaded] = useState(false);
+  const currentLanguage = useSyncExternalStore(
+    subscribeLanguage,
+    getLanguageSnapshot,
+    getServerLanguageSnapshot,
+  );
   const [showDropdown, setShowDropdown] = useState(false);
 
-  useEffect(() => {
-    const saved = localStorage.getItem("cga-language") || "en";
-    setCurrentLanguage(saved);
-    setIsLoaded(true);
-  }, []);
-
   const handleLanguageChange = (code: string) => {
-    setCurrentLanguage(code);
-    setShowDropdown(false);
     localStorage.setItem("cga-language", code);
+    window.dispatchEvent(new StorageEvent("storage", { key: "cga-language", newValue: code }));
+    setShowDropdown(false);
   };
 
-  if (!isLoaded) return null;
   const current = languages.find((l) => l.code === currentLanguage);
 
   return (
