@@ -11,13 +11,6 @@ public class AuthController : ControllerBase
     private readonly IConfiguration _configuration;
     private readonly ILogger<AuthController> _logger;
 
-    // Simple hardcoded credentials for development - in production, use a proper user store
-    private static readonly Dictionary<string, string> ValidUsers = new()
-    {
-        { "admin", "admin123" },
-        { "manager", "manager123" }
-    };
-
     public AuthController(
         IAuthenticationService authService,
         IConfiguration configuration,
@@ -29,48 +22,46 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Login with username and password to receive a JWT token.
-    /// Development only - in production, integrate with a proper identity provider.
+    /// Login using credentials supplied through configuration/environment variables.
+    /// Configure Auth:Users as a JSON object containing username, password and role.
+    /// Production deployments must use a secret manager or environment variables.
     /// </summary>
     [HttpPost("login")]
     [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(LoginErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(LoginErrorResponse), StatusCodes.Status401Unauthorized)]
     public IActionResult Login([FromBody] LoginRequest request)
     {
         if (request == null || string.IsNullOrWhiteSpace(request.Username))
-        {
             return BadRequest(new LoginErrorResponse("Username is required"));
-        }
 
         if (string.IsNullOrWhiteSpace(request.Password))
-        {
             return BadRequest(new LoginErrorResponse("Password is required"));
-        }
 
-        // Validate credentials (development only)
-        if (!ValidUsers.TryGetValue(request.Username, out var storedPassword) 
-            || storedPassword != request.Password)
+        var configuredUsers = _configuration.GetSection("Auth:Users").Get<List<ConfiguredUser>>();
+        var user = configuredUsers?.FirstOrDefault(x =>
+            string.Equals(x.Username, request.Username, StringComparison.Ordinal));
+
+        if (user == null || string.IsNullOrEmpty(user.Password) || user.Password != request.Password)
         {
             _logger.LogWarning("Failed login attempt for user: {Username}", request.Username);
             return Unauthorized(new LoginErrorResponse("Invalid username or password"));
         }
 
-        // Determine role based on username (simplistic approach for development)
-        var role = request.Username == "admin" ? "Admin" : "Manager";
-
         try
         {
-            var token = _authService.GenerateToken(request.Username, role);
-            var expiryMinutes = int.TryParse(
-                _configuration["Jwt:ExpiryMinutes"],
-                out var minutes) ? minutes : 60;
+            var role = string.IsNullOrWhiteSpace(user.Role) ? "Manager" : user.Role;
+            var token = _authService.GenerateToken(user.Username, role);
+            var expiryMinutes = int.TryParse(_configuration["Jwt:ExpiryMinutes"], out var minutes)
+                ? minutes
+                : 60;
 
-            _logger.LogInformation("User {Username} logged in successfully", request.Username);
+            _logger.LogInformation("User {Username} logged in successfully", user.Username);
 
             return Ok(new LoginResponse(
                 Token: token,
                 TokenType: "Bearer",
-                ExpiresIn: expiryMinutes * 60)); // Convert to seconds
+                ExpiresIn: expiryMinutes * 60));
         }
         catch (Exception ex)
         {
@@ -79,5 +70,12 @@ public class AuthController : ControllerBase
                 StatusCodes.Status500InternalServerError,
                 new LoginErrorResponse("An error occurred during login"));
         }
+    }
+
+    private sealed class ConfiguredUser
+    {
+        public string Username { get; init; } = string.Empty;
+        public string Password { get; init; } = string.Empty;
+        public string Role { get; init; } = "Manager";
     }
 }
