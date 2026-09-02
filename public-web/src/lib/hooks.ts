@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 function createStorageSnapshot<T>(key: string, initialValue: T) {
-  const serverSnapshot = JSON.stringify(initialValue);
   let cachedRaw: string | null = null;
   let cachedValue = initialValue;
 
@@ -12,17 +11,14 @@ function createStorageSnapshot<T>(key: string, initialValue: T) {
       const raw = window.localStorage.getItem(key);
       if (raw === cachedRaw) return cachedValue;
       cachedRaw = raw;
-      cachedValue = raw ? JSON.parse(raw) as T : initialValue;
+      cachedValue = raw ? (JSON.parse(raw) as T) : initialValue;
       return cachedValue;
     } catch {
       return initialValue;
     }
   };
 
-  const getServerSnapshot = () => {
-    void serverSnapshot;
-    return initialValue;
-  };
+  const getServerSnapshot = () => initialValue;
 
   const subscribe = (onStoreChange: () => void) => {
     const onStorage = (event: StorageEvent) => {
@@ -38,15 +34,23 @@ function createStorageSnapshot<T>(key: string, initialValue: T) {
   return { getSnapshot, getServerSnapshot, subscribe };
 }
 
+const subscribeHydration = () => () => {};
+const getClientHydrationSnapshot = () => true;
+const getServerHydrationSnapshot = () => false;
+
 /** Hook for managing localStorage state without synchronous effect updates. */
 export function useLocalStorage<T>(key: string, initialValue: T) {
   const store = createStorageSnapshot(key, initialValue);
-  const storedValue = useSyncExternalStore(store.subscribe, store.getSnapshot, store.getServerSnapshot);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    setIsLoaded(true);
-  }, []);
+  const storedValue = useSyncExternalStore(
+    store.subscribe,
+    store.getSnapshot,
+    store.getServerSnapshot,
+  );
+  const isLoaded = useSyncExternalStore(
+    subscribeHydration,
+    getClientHydrationSnapshot,
+    getServerHydrationSnapshot,
+  );
 
   const setValue = (value: T | ((val: T) => T)) => {
     try {
