@@ -9,6 +9,8 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
   const [transitioning, setTransitioning] = useState(false);
 
   useEffect(() => {
+    // This effect intentionally starts the visual transition when the route changes.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setTransitioning(true);
     const timer = setTimeout(() => {
       setDisplayChildren(children);
@@ -18,13 +20,7 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
   }, [pathname, children]);
 
   return (
-    <div
-      className={`transition-all duration-500 ease-out ${
-        transitioning
-          ? "opacity-0 translate-y-3"
-          : "opacity-100 translate-y-0"
-      }`}
-    >
+    <div className={`transition-all duration-500 ease-out ${transitioning ? "opacity-0 translate-y-3" : "opacity-100 translate-y-0"}`}>
       {displayChildren}
     </div>
   );
