@@ -49,12 +49,21 @@ builder.Services.AddScoped<IAuthenticationService, JwtAuthenticationService>();
 
 // Configure JWT authentication
 var jwtSecretKey = builder.Configuration["Jwt:SecretKey"];
-if (string.IsNullOrEmpty(jwtSecretKey))
+var isProduction = builder.Environment.IsProduction();
+
+if (string.IsNullOrWhiteSpace(jwtSecretKey) || jwtSecretKey.Length < 32)
 {
-    throw new InvalidOperationException("JWT secret key is not configured");
+    throw new InvalidOperationException(
+        "Jwt:SecretKey must be configured and contain at least 32 characters.");
 }
 
-var key = Encoding.ASCII.GetBytes(jwtSecretKey);
+if (isProduction && jwtSecretKey.Contains("your-secret-key-here", StringComparison.OrdinalIgnoreCase))
+{
+    throw new InvalidOperationException(
+        "The default JWT secret cannot be used in production. Configure Jwt:SecretKey via environment variables or a production secret store.");
+}
+
+var key = Encoding.UTF8.GetBytes(jwtSecretKey);
 builder.Services
     .AddAuthentication(options =>
     {
@@ -83,6 +92,7 @@ builder.Services
                 {
                     context.Response.Headers["Token-Expired"] = "true";
                 }
+
                 return Task.CompletedTask;
             }
         };
@@ -90,30 +100,36 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
-// Configure CORS
+// Configure CORS from environment/configuration for both same-origin and separate frontend deployments.
 var allowedOrigins = builder.Configuration.GetSection("CorsPolicy:AllowedOrigins")
-    .Get<string[]>() ?? new[] { "http://localhost:3000", "http://localhost:5173" };
+    .Get<string[]>() ?? Array.Empty<string>();
 
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins(allowedOrigins)
-            .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials();
+        if (allowedOrigins.Length > 0)
+        {
+            policy.WithOrigins(allowedOrigins)
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .AllowCredentials();
+        }
     });
 });
 
 builder.Services.AddOpenApi();
-
 builder.Services.AddSwaggerGen();
 
-var dataSourceBuilder = new NpgsqlDataSourceBuilder(
-    builder.Configuration.GetConnectionString("DefaultConnection"));
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException(
+        "ConnectionStrings:DefaultConnection must be configured.");
+}
 
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
 dataSourceBuilder.EnableDynamicJson();
-
 var dataSource = dataSourceBuilder.Build();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -125,14 +141,10 @@ builder.Services.AddScoped<IGemstoneProductRepository, GemstoneProductRepository
 builder.Services.AddScoped<IGemstoneItemRepository, GemstoneItemRepository>();
 builder.Services.AddScoped<IGemstoneMediaRepository, GemstoneMediaRepository>();
 builder.Services.AddScoped<ICertificateRepository, CertificateRepository>();
-builder.Services.AddScoped<IGemstoneMediaRepository, GemstoneMediaRepository>();
-builder.Services.AddScoped<ICertificateRepository, CertificateRepository>();
 builder.Services.AddScoped<IGemstoneCatalogService, GemstoneCatalogService>();
 builder.Services.AddScoped<GemstoneItemService>();
 builder.Services.AddScoped<GemstoneCatalogDetailsService>();
 builder.Services.AddScoped<GemstoneItemDetailsService>();
-builder.Services.AddScoped<GemstoneMediaService>();
-builder.Services.AddScoped<CertificateService>();
 builder.Services.AddScoped<GemstoneMediaService>();
 builder.Services.AddScoped<CertificateService>();
 
@@ -156,7 +168,6 @@ builder.Services.AddScoped<SaleService>();
 
 builder.Services.AddScoped<IAtelierSettingsRepository, AtelierSettingsRepository>();
 builder.Services.AddScoped<AtelierSettingsService>();
-
 builder.Services.AddScoped<DashboardService>();
 
 var app = builder.Build();
@@ -169,21 +180,17 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
     await db.Database.MigrateAsync();
-
     CatalogSeedData.Seed(db);
 }
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-
-// Add authentication and authorization middleware BEFORE MapControllers
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -191,15 +198,12 @@ app.MapGet("/api/health", async (
     ApplicationDbContext dbContext,
     CancellationToken cancellationToken) =>
 {
-    var databaseHealthy = await dbContext.Database.CanConnectAsync(
-        cancellationToken);
+    var databaseHealthy = await dbContext.Database.CanConnectAsync(cancellationToken);
 
     return Results.Ok(new
     {
         status = databaseHealthy ? "healthy" : "unhealthy",
-        database = databaseHealthy
-            ? "ceylon_gem_atelier"
-            : "unavailable"
+        database = databaseHealthy ? "ceylon_gem_atelier" : "unavailable"
     });
 });
 
@@ -208,6 +212,3 @@ app.MapControllers();
 app.Run();
 
 public partial class Program;
-
-
-
