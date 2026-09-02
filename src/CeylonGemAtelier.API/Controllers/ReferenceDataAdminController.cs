@@ -1,11 +1,13 @@
 using CeylonGemAtelier.Application.Catalog.DTOs;
 using CeylonGemAtelier.Application.Catalog.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CeylonGemAtelier.API.Controllers;
 
 [ApiController]
 [Route("api/catalog/reference/admin")]
+[Authorize(Roles = "Admin,Manager")]
 public sealed class ReferenceDataAdminController : ControllerBase
 {
     private readonly ReferenceDataAdminService _service;

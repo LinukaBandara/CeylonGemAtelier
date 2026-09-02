@@ -1,0 +1,174 @@
+@import "tailwindcss";
+
+:root {
+  /* Concept 01 — Private Atelier Palette - Light Mode */
+  --color-ivory: #F7F4EF;
+  --color-parchment: #EDE8DF;
+  --color-graphite: #1C1B1A;
+  --color-muted: #6B6560;
+  --color-sapphire: #3A4F6B;
+  --color-stone: #C8C0B4;
+  --color-white: #FFFFFF;
+  
+  --background: var(--color-ivory);
+  --foreground: var(--color-graphite);
+  
+  /* Typography */
+  --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Georgia, serif;
+  --font-sans: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "SFMono-Regular", "Consolas", "Liberation Mono", monospace;
+}
+
+/* Dark Mode */
+html.dark {
+  --color-ivory: #1C1B1A;
+  --color-parchment: #2A2926;
+  --color-graphite: #F7F4EF;
+  --color-muted: #9D9794;
+  --color-sapphire: #6BA3D9;
+  --color-stone: #4A4540;
+  
+  --background: #1C1B1A;
+  --foreground: #F7F4EF;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ivory: var(--color-ivory);
+  --color-parchment: var(--color-parchment);
+  --color-graphite: var(--color-graphite);
+  --color-muted: var(--color-muted);
+  --color-sapphire: var(--color-sapphire);
+  --color-stone: var(--color-stone);
+  --font-sans: var(--font-sans);
+  --font-serif: var(--font-serif);
+  --font-mono: var(--font-mono);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Elegant focus states */
+:focus-visible {
+  outline: 2px solid var(--color-sapphire);
+  outline-offset: 3px;
+}
+
+/* Selection */
+::selection {
+  background: var(--color-sapphire);
+  color: var(--color-ivory);
+}
+
+/* Utility classes for Concept 01 */
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.hairline {
+  border-color: var(--color-stone);
+}
+
+/* Gem light-sweep animation */
+@keyframes gem-sweep {
+  0% {
+    transform: translateX(-120%) skewX(-12deg);
+  }
+  100% {
+    transform: translateX(120%) skewX(-12deg);
+  }
+}
+
+/* Luxury motion utilities */
+@keyframes fade-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes soft-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-rise {
+  animation: fade-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.animate-soft-fade {
+  animation: soft-fade 0.7s ease-out forwards;
+}
+
+/* Stagger helpers */
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+
+/* Premium underline grow */
+.link-underline {
+  position: relative;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* Print-ready dossier */
+@media print {
+  header, footer, .no-print, [data-sticky] {
+    display: none !important;
+  }
+  body {
+    background: white;
+    color: black;
+  }
+  main {
+    padding: 0 !important;
+  }
+}

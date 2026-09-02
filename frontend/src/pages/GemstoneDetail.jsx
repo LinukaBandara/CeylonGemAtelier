@@ -2,17 +2,18 @@
 import {
   ArrowLeft,
   BadgeCheck,
-  CalendarDays,
   ChevronRight,
   CircleDollarSign,
   Edit3,
   Gem,
+  Heart,
   Image as ImageIcon,
   MapPin,
   ShieldCheck,
 } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { api, unwrapCollection } from "../services/api";
+import { useAppContext } from "../contexts/AppContext";
 import "./GemstoneDetail.css";
 
 function formatCurrency(value, currency = "USD") {
@@ -77,6 +78,7 @@ function DetailRow({ label, value }) {
 
 export default function GemstoneDetail() {
   const { id } = useParams();
+  const { favorites } = useAppContext();
 
   const [item, setItem] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -188,6 +190,31 @@ export default function GemstoneDetail() {
           <Edit3 size={13} strokeWidth={1.4} />
           Edit Stone
         </Link>
+
+        {/* Favorite toggle */}
+        {item && (
+          <button
+            type="button"
+            className={`fav-heart-btn${favorites.isFavorite(id) ? " active" : ""}`}
+            aria-label={favorites.isFavorite(id) ? "Remove from saved stones" : "Save this stone"}
+            aria-pressed={favorites.isFavorite(id)}
+            style={{ marginLeft: 4, width: 34, height: 34 }}
+            onClick={() =>
+              favorites.toggle({
+                id,
+                stockNumber: detail.stockNumber,
+                productName: detail.productName ?? "",
+                status: detail.status,
+              })
+            }
+          >
+            <Heart
+              size={15}
+              strokeWidth={1.4}
+              fill={favorites.isFavorite(id) ? "currentColor" : "none"}
+            />
+          </button>
+        )}
       </header>
 
       <section className="detail-identity">

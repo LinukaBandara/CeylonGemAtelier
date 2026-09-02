@@ -16,6 +16,7 @@ TestResults/
 
 # Logs
 *.log
+logs/
 
 # OS files
 .DS_Store
@@ -40,4 +41,11 @@ publish/
 
 # Local backups
 frontend-backup/
+frontend-backup-theme-before-import/
+public-web-backup-*/
 *.bak
+
+# AI handoff archives / generated bundles
+*.zip
+AI-Handoff/
+CGA-Dashboard-Theme-Handover/

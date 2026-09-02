@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { Heart, Search } from "lucide-react";
 import { Link } from "react-router-dom";
 import { api, unwrapCollection } from "../services/api";
 import StatusBadge from "../components/StatusBadge";
+import { useAppContext } from "../contexts/AppContext";
 import "./Inventory.css";
 import "./admin.css";
 
 export default function Inventory() {
+  const { favorites } = useAppContext();
   const [items, setItems] = useState([]);
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("All");
@@ -90,31 +92,58 @@ export default function Inventory() {
                 <th>Clarity</th>
                 <th>Price</th>
                 <th>Status</th>
+                {/* Favorites column — no header text, screen-reader label below */}
+                <th aria-label="Saved" style={{ width: 40 }} />
               </tr>
             </thead>
             <tbody>
-              {filtered.map((item) => (
-                <tr key={item.id}>
-                  <td>
-                    <Link className="stock-link" to={`/inventory/${item.id}`}>
-                      {item.stockNumber}
-                    </Link>
-                  </td>
-                  <td>{Number(item.caratWeight).toFixed(2)} ct</td>
-                  <td>{item.color || "—"}</td>
-                  <td>{item.clarity || "—"}</td>
-                  <td>
-                    {item.sellingPriceAmount
-                      ? `${item.sellingPriceCurrency ?? "USD"} ${Number(
-                          item.sellingPriceAmount
-                        ).toLocaleString()}`
-                      : "—"}
-                  </td>
-                  <td>
-                    <StatusBadge status={item.status} />
-                  </td>
-                </tr>
-              ))}
+              {filtered.map((item) => {
+                const saved = favorites.isFavorite(item.id);
+                return (
+                  <tr key={item.id}>
+                    <td>
+                      <Link className="stock-link" to={`/inventory/${item.id}`}>
+                        {item.stockNumber}
+                      </Link>
+                    </td>
+                    <td>{Number(item.caratWeight).toFixed(2)} ct</td>
+                    <td>{item.color || "—"}</td>
+                    <td>{item.clarity || "—"}</td>
+                    <td>
+                      {item.sellingPriceAmount
+                        ? `${item.sellingPriceCurrency ?? "USD"} ${Number(
+                            item.sellingPriceAmount
+                          ).toLocaleString()}`
+                        : "—"}
+                    </td>
+                    <td>
+                      <StatusBadge status={item.status} />
+                    </td>
+                    <td>
+                      <button
+                        type="button"
+                        className={`fav-heart-btn${saved ? " active" : ""}`}
+                        aria-label={saved ? `Remove ${item.stockNumber} from saved` : `Save ${item.stockNumber}`}
+                        aria-pressed={saved}
+                        onClick={() =>
+                          favorites.toggle({
+                            id: item.id,
+                            stockNumber: item.stockNumber,
+                            productName: item.productName ?? "",
+                            status: item.status,
+                          })
+                        }
+                      >
+                        <Heart
+                          size={13}
+                          strokeWidth={1.5}
+                          fill={saved ? "currentColor" : "none"}
+                        />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}

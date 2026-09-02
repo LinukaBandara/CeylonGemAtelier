@@ -1,5 +1,6 @@
 using CeylonGemAtelier.Application.Catalog.DTOs;
 using CeylonGemAtelier.Application.Catalog.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CeylonGemAtelier.API.Controllers;
@@ -21,7 +22,7 @@ public sealed class GemstoneItemsController : ControllerBase
     public async Task<IActionResult> GetAll(
         CancellationToken cancellationToken)
     {
-        return Ok(await _service.GetAllAsync(cancellationToken));
+        return Ok(await _service.GetAllEnrichedAsync(cancellationToken));
     }
 
     [HttpGet("{id:guid}")]
@@ -52,6 +53,7 @@ public sealed class GemstoneItemsController : ControllerBase
             : Ok(details);
     }
     [HttpPost]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> Create(
         [FromBody] CreateGemstoneItemRequest request,
         CancellationToken cancellationToken)
@@ -78,6 +80,7 @@ public sealed class GemstoneItemsController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> Update(
         Guid id,
         [FromBody] UpdateGemstoneItemRequest request,
@@ -105,6 +108,7 @@ public sealed class GemstoneItemsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/reserve")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> Reserve(
         Guid id,
         CancellationToken cancellationToken)
@@ -114,6 +118,7 @@ public sealed class GemstoneItemsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/release")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> Release(
         Guid id,
         CancellationToken cancellationToken)
@@ -123,6 +128,7 @@ public sealed class GemstoneItemsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/sell")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> Sell(
         Guid id,
         CancellationToken cancellationToken)
@@ -132,6 +138,7 @@ public sealed class GemstoneItemsController : ControllerBase
     }
 
     [HttpPost("{id:guid}/unavailable")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> Unavailable(
         Guid id,
         CancellationToken cancellationToken)

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Plus, Search } from "lucide-react";
 import { api, unwrapCollection } from "../services/api";
 import { useToast } from "../components/Toast";
@@ -23,6 +24,7 @@ function slugify(value) {
 
 export default function Products() {
   const toast = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
   const [types, setTypes] = useState([]);
   const [query, setQuery] = useState("");
@@ -49,6 +51,19 @@ export default function Products() {
         .catch(() => setTypes([])),
     ]).finally(() => setLoading(false));
   }, []);
+
+  // Auto-open create modal when navigated here with ?create=1
+  useEffect(() => {
+    if (searchParams.get("create") === "1" && !loading) {
+      setForm(emptyForm);
+      setFormError("");
+      setEditing("new");
+      // Remove the param so back/refresh doesn't re-open
+      setSearchParams({}, { replace: true });
+    }
+  // setSearchParams is stable from react-router — safe to omit
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, loading]);
 
   const typeName = useMemo(() => {
     const map = new Map(types.map((t) => [t.id, t.name]));
@@ -95,14 +110,30 @@ export default function Products() {
     };
     try {
       if (editing === "new") {
-        await api.post("/api/catalog/products", body);
+        const created = await api.post("/api/catalog/products", body);
+        // Optimistic: add immediately so the row appears without waiting for GET
+        if (created && created.id) {
+          setProducts((prev) => [
+            ...prev,
+            { items: [], isPublished: false, ...created },
+          ]);
+        }
         toast.success("Product created");
+        setEditing(null);
+        // Background reload to get canonical server state
+        load().catch(() => {});
       } else {
         await api.put(`/api/catalog/products/${editing}`, body);
+        // Optimistic: patch the row in-place
+        setProducts((prev) =>
+          prev.map((p) =>
+            p.id === editing ? { ...p, ...body } : p
+          )
+        );
         toast.success("Product updated");
+        setEditing(null);
+        load().catch(() => {});
       }
-      setEditing(null);
-      await load();
     } catch (err) {
       setFormError(err.message);
       toast.error(err.message);
@@ -112,14 +143,24 @@ export default function Products() {
   };
 
   const togglePublish = async (product) => {
+    const action = product.isPublished ? "unpublish" : "publish";
+    // Optimistic toggle
+    setProducts((prev) =>
+      prev.map((p) =>
+        p.id === product.id ? { ...p, isPublished: !product.isPublished } : p
+      )
+    );
     try {
-      await api.post(
-        `/api/catalog/products/${product.id}/${product.isPublished ? "unpublish" : "publish"}`
-      );
+      await api.post(`/api/catalog/products/${product.id}/${action}`);
       toast.success(product.isPublished ? "Product unpublished" : "Product published");
-      await load();
+      load().catch(() => {});
     } catch (err) {
-      setError(err.message);
+      // Revert optimistic change on failure
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.id === product.id ? { ...p, isPublished: product.isPublished } : p
+        )
+      );
       toast.error(err.message);
     }
   };

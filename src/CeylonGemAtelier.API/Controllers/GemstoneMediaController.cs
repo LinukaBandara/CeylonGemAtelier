@@ -1,5 +1,6 @@
 using CeylonGemAtelier.Application.Catalog.DTOs;
 using CeylonGemAtelier.Application.Catalog.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CeylonGemAtelier.API.Controllers;
@@ -26,6 +27,7 @@ public sealed class GemstoneMediaController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> Create(
         Guid gemstoneItemId,
         [FromBody] CreateGemstoneMediaRequest request,
@@ -44,6 +46,7 @@ public sealed class GemstoneMediaController : ControllerBase
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> Update(
         Guid gemstoneItemId,
         Guid id,
@@ -57,6 +60,7 @@ public sealed class GemstoneMediaController : ControllerBase
     }
 
     [HttpPost("{id:guid}/primary")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> SetPrimary(
         Guid gemstoneItemId,
         Guid id,

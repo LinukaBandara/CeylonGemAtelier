@@ -1,6 +1,7 @@
 using CeylonGemAtelier.Application.Catalog.DTOs;
 using CeylonGemAtelier.Application.Catalog.Interfaces;
 using CeylonGemAtelier.Application.Catalog.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CeylonGemAtelier.API.Controllers;
@@ -65,6 +66,7 @@ private readonly GemstoneCatalogDetailsService _catalogDetailsService;
         return Ok(product);
     }
     [HttpPost("products")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> CreateProduct(
         [FromBody] CreateGemstoneProductRequest request,
         CancellationToken cancellationToken)
@@ -97,6 +99,7 @@ private readonly GemstoneCatalogDetailsService _catalogDetailsService;
     }
 
     [HttpPut("products/{id:guid}")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> UpdateProduct(
         Guid id,
         [FromBody] UpdateGemstoneProductRequest request,
@@ -124,6 +127,7 @@ private readonly GemstoneCatalogDetailsService _catalogDetailsService;
     }
 
     [HttpPost("products/{id:guid}/publish")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> PublishProduct(
         Guid id,
         CancellationToken cancellationToken)
@@ -141,6 +145,7 @@ private readonly GemstoneCatalogDetailsService _catalogDetailsService;
     }
 
     [HttpPost("products/{id:guid}/unpublish")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> UnpublishProduct(
         Guid id,
         CancellationToken cancellationToken)

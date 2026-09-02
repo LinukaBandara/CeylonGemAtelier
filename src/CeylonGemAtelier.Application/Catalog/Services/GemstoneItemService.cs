@@ -421,6 +421,66 @@ public sealed class GemstoneItemService
         return item;
     }
 
+    public async Task<IReadOnlyList<GemstoneItemEnrichedDto>> GetAllEnrichedAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var items = await _itemRepository.GetAllAsync(cancellationToken);
+        var enriched = new List<GemstoneItemEnrichedDto>();
+
+        foreach (var item in items)
+        {
+            var dto = await MapEnrichedAsync(item, cancellationToken);
+            enriched.Add(dto);
+        }
+
+        return enriched;
+    }
+
+    public async Task<GemstoneItemEnrichedDto?> GetByIdEnrichedAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        var item = await _itemRepository.GetByIdAsync(
+            id,
+            cancellationToken);
+
+        return item is null ? null : await MapEnrichedAsync(item, cancellationToken);
+    }
+
+    private async Task<GemstoneItemEnrichedDto> MapEnrichedAsync(
+        GemstoneItem item,
+        CancellationToken cancellationToken)
+    {
+        // Load reference names
+        var shape = await _shapeRepository.GetByIdAsync(item.ShapeId, cancellationToken);
+        var treatment = await _treatmentRepository.GetByIdAsync(item.TreatmentId, cancellationToken);
+        var product = await _productRepository.GetByIdAsync(item.GemstoneProductId, cancellationToken);
+        var origin = item.OriginId.HasValue
+            ? await _originRepository.GetByIdAsync(item.OriginId.Value, cancellationToken)
+            : null;
+
+        return new GemstoneItemEnrichedDto(
+            item.Id,
+            item.StockNumber,
+            item.CaratWeight,
+            item.ShapeId,
+            shape?.Name,
+            item.Color,
+            item.Clarity,
+            item.TreatmentId,
+            treatment?.Name,
+            item.OriginId,
+            origin?.Country,
+            item.LengthMm,
+            item.WidthMm,
+            item.DepthMm,
+            item.SellingPrice?.Amount,
+            item.SellingPrice?.Currency,
+            item.Status.ToString(),
+            item.GemstoneProductId,
+            product?.Name);
+    }
+
     private static GemstoneItemDto Map(GemstoneItem item)
     {
         return new GemstoneItemDto(

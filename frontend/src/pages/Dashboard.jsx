@@ -15,8 +15,9 @@ import {
   PackageCheck,
   Plus,
   Receipt,
+  RefreshCw,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api, unwrapCollection } from "../services/api";
 import "./Dashboard.css";
 
@@ -72,33 +73,95 @@ function MetricCard({ label, value, subtitle, icon: Icon, accent = false }) {
   );
 }
 
+/* ── CSV export ──────────────────────────────────────────── */
+
+function escapeCsv(value) {
+  if (value == null) return "";
+  const str = String(value);
+  if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
+
+function exportInventoryCSV(items, products) {
+  // Build a product name lookup
+  const productNames = new Map();
+  for (const p of products) {
+    for (const item of (p.items ?? [])) {
+      productNames.set(item.id, p.name);
+    }
+  }
+
+  const headers = [
+    "Stock Number",
+    "Product",
+    "Carat Weight",
+    "Colour",
+    "Clarity",
+    "Status",
+    "Price",
+    "Currency",
+  ];
+
+  const rows = items.map((item) => [
+    item.stockNumber,
+    productNames.get(item.id) ?? "",
+    Number(item.caratWeight).toFixed(2),
+    item.color ?? "",
+    item.clarity ?? "",
+    item.status ?? "",
+    item.sellingPriceAmount != null ? Number(item.sellingPriceAmount).toFixed(2) : "",
+    item.sellingPriceCurrency ?? "",
+  ]);
+
+  const csv = [headers, ...rows]
+    .map((row) => row.map(escapeCsv).join(","))
+    .join("\r\n");
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  const date = new Date().toISOString().slice(0, 10);
+  a.href = url;
+  a.download = `cga-inventory-${date}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 export default function Dashboard() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
+  const load = (silent = false) => {
+    if (!silent) setLoading(true);
+    else setRefreshing(true);
     let active = true;
 
-    Promise.all([
+    return Promise.all([
       api.get("/api/catalog/products").then((payload) => {
         if (active) setProducts(unwrapCollection(payload));
       }),
       api.get("/api/dashboard/summary").then((payload) => {
         if (active) setSummary(payload);
-      }),
+      }).catch(() => {}),
     ])
-      .catch((err) => {
-        if (active) setError(err.message || "Unable to load dashboard.");
-      })
+      .catch((err) => { if (active) setError(err.message || "Unable to load dashboard."); })
       .finally(() => {
-        if (active) setLoading(false);
+        if (active) { setLoading(false); setRefreshing(false); }
       });
+  };
 
-    return () => {
-      active = false;
-    };
+  useEffect(() => {
+    let active = true;
+    load();
+    return () => { active = false; };
   }, []);
 
   const items = useMemo(
@@ -175,14 +238,33 @@ export default function Dashboard() {
         </div>
 
         <div className="dashboard-actions">
-          <button className="cga-button cga-button-secondary" type="button">
+          <button
+            className="cga-button cga-button-secondary"
+            type="button"
+            disabled={loading || items.length === 0}
+            onClick={() => exportInventoryCSV(items, products)}
+          >
             <Download size={14} strokeWidth={1.5} />
             Export Report
           </button>
-          <Link className="cga-button cga-button-primary" to="/inventory?new=1">
+          <button
+            className="cga-button cga-button-secondary"
+            type="button"
+            disabled={refreshing}
+            onClick={() => load(true)}
+            title="Refresh dashboard data"
+          >
+            <RefreshCw size={14} strokeWidth={1.5} className={refreshing ? "spin" : ""} />
+            {refreshing ? "Refreshing..." : "Refresh"}
+          </button>
+          <button
+            className="cga-button cga-button-primary"
+            type="button"
+            onClick={() => navigate("/products?create=1")}
+          >
             <Plus size={15} strokeWidth={1.8} />
             Add Gemstone
-          </Link>
+          </button>
         </div>
       </header>
 
@@ -224,7 +306,7 @@ export default function Dashboard() {
           )}
 
           <section className="dashboard-quick-actions">
-            <Link className="quick-action" to="/inventory?new=1">Add Gemstone</Link>
+            <Link className="quick-action" to="/products?create=1">Add Gemstone</Link>
             <Link className="quick-action" to="/products">Products</Link>
             <Link className="quick-action" to="/certificates">Certificates</Link>
             <Link className="quick-action" to="/media">Media</Link>
@@ -240,17 +322,17 @@ export default function Dashboard() {
                   <h2>Recent Activity</h2>
                 </div>
               </div>
-              <ul className="dashboard-activity">
+              <div className="dashboard-activity">
                 {summary.recentActivity.map((activity, index) => (
-                  <li key={index}>
+                  <article key={index}>
                     <span className="activity-type">{activity.type}</span>
                     <span className="activity-description">{activity.description}</span>
                     <span className="activity-date">
                       {new Date(activity.occurredAt).toLocaleDateString()}
                     </span>
-                  </li>
+                  </article>
                 ))}
-              </ul>
+              </div>
             </section>
           )}
 

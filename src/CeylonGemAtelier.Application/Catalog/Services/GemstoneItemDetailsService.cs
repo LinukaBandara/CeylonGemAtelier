@@ -8,15 +8,27 @@ public sealed class GemstoneItemDetailsService
     private readonly IGemstoneItemRepository _itemRepository;
     private readonly IGemstoneMediaRepository _mediaRepository;
     private readonly ICertificateRepository _certificateRepository;
+    private readonly IShapeRepository _shapeRepository;
+    private readonly ITreatmentRepository _treatmentRepository;
+    private readonly IGemstoneProductRepository _productRepository;
+    private readonly IOriginRepository _originRepository;
 
     public GemstoneItemDetailsService(
         IGemstoneItemRepository itemRepository,
         IGemstoneMediaRepository mediaRepository,
-        ICertificateRepository certificateRepository)
+        ICertificateRepository certificateRepository,
+        IShapeRepository shapeRepository,
+        ITreatmentRepository treatmentRepository,
+        IGemstoneProductRepository productRepository,
+        IOriginRepository originRepository)
     {
         _itemRepository = itemRepository;
         _mediaRepository = mediaRepository;
         _certificateRepository = certificateRepository;
+        _shapeRepository = shapeRepository;
+        _treatmentRepository = treatmentRepository;
+        _productRepository = productRepository;
+        _originRepository = originRepository;
     }
 
     public async Task<GemstoneItemDetailsDto?> GetByItemIdAsync(
@@ -40,21 +52,34 @@ public sealed class GemstoneItemDetailsService
             gemstoneItemId,
             cancellationToken);
 
-        var itemDto = new GemstoneItemDto(
+        // Enrich item with reference data
+        var shape = await _shapeRepository.GetByIdAsync(item.ShapeId, cancellationToken);
+        var treatment = await _treatmentRepository.GetByIdAsync(item.TreatmentId, cancellationToken);
+        var product = await _productRepository.GetByIdAsync(item.GemstoneProductId, cancellationToken);
+        var origin = item.OriginId.HasValue
+            ? await _originRepository.GetByIdAsync(item.OriginId.Value, cancellationToken)
+            : null;
+
+        var itemDto = new GemstoneItemEnrichedDto(
             item.Id,
             item.StockNumber,
             item.CaratWeight,
             item.ShapeId,
+            shape?.Name,
             item.Color,
             item.Clarity,
             item.TreatmentId,
+            treatment?.Name,
             item.OriginId,
+            origin?.Country,
             item.LengthMm,
             item.WidthMm,
             item.DepthMm,
             item.SellingPrice?.Amount,
             item.SellingPrice?.Currency,
-            item.Status.ToString());
+            item.Status.ToString(),
+            item.GemstoneProductId,
+            product?.Name);
 
         var mediaDtos = media
             .Select(x => new GemstoneMediaDto(

@@ -89,11 +89,11 @@
   background: #2f4259;
 }
 
+/* detail-grid is the label+value spec rows inside the panel — NOT the outer layout */
 .detail-grid {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 20px;
-  margin-bottom: 20px;
+  grid-template-columns: 1fr;
+  gap: 0;
 }
 
 .detail-visual-panel {
@@ -179,12 +179,25 @@
 }
 
 .detail-panel-heading {
-  margin: 0 0 14px;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-muted, #6b6560);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 16px;
+}
+
+.detail-panel-heading h2 {
+  margin: 4px 0 0;
+  font-family: "Cormorant Garamond", Georgia, serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--color-graphite, #1c1b1a);
+}
+
+.detail-panel-heading svg {
+  color: var(--color-sapphire, #3a4f6b);
+  flex-shrink: 0;
+  margin-top: 4px;
 }
 
 .detail-information {
@@ -219,15 +232,32 @@
 
 .detail-status {
   display: inline-flex;
-  padding: 3px 8px;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
   border-radius: 3px;
   font-size: 10px;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  background: rgba(61, 107, 79, 0.12);
-  color: #3d6b4f;
+  flex-shrink: 0;
 }
+
+.detail-status > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+
+.detail-status.status-available  { background: rgba(61, 107, 79, 0.12);  color: #3d6b4f; }
+.detail-status.status-in-stock   { background: rgba(61, 107, 79, 0.12);  color: #3d6b4f; }
+.detail-status.status-reserved   { background: rgba(138, 107, 47, 0.12); color: #8a6b2f; }
+.detail-status.status-sold       { background: rgba(58, 79, 107, 0.12);  color: #3a4f6b; }
+.detail-status.status-unavailable{ background: rgba(107, 101, 96, 0.1);  color: #6b6560; }
+.detail-status.status-unknown    { background: rgba(107, 101, 96, 0.1);  color: #6b6560; }
 
 .valuation-panel .detail-price {
   font-family: "Cormorant Garamond", Georgia, serif;
@@ -255,6 +285,15 @@
   border-radius: 4px;
   background: var(--color-white, #fff);
   padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: default;
+}
+
+.detail-mini-panel > div {
+  flex: 1;
+  min-width: 0;
 }
 
 .detail-mini-panel .mini-icon {
@@ -277,10 +316,21 @@
 }
 
 .detail-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   padding-top: 16px;
   border-top: 1px solid var(--cga-border-soft, #ddd6cb);
   font-size: 12px;
   color: var(--color-muted, #6b6560);
+  flex-wrap: wrap;
+}
+
+.detail-footer > div {
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .detail-loading {

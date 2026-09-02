@@ -1,4 +1,5 @@
-import { NavLink } from "react-router-dom";
+﻿import { NavLink } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   BadgeCheck,
   Bookmark,
@@ -12,6 +13,7 @@ import {
   ShoppingBag,
   X,
 } from "lucide-react";
+import { logout } from "../services/auth";
 
 const navigation = [
   {
@@ -51,6 +53,14 @@ function BrandMark() {
 }
 
 export default function Sidebar({ open, onClose }) {
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    logout();
+    onClose?.();
+    navigate("/login", { replace: true });
+  }
+
   return (
     <>
       <button
@@ -67,7 +77,7 @@ export default function Sidebar({ open, onClose }) {
           <div className="sidebar-wordmark">
             <strong>CEYLON</strong>
             <strong>GEM ATELIER</strong>
-            <span>LUXURY · TRUST · HERITAGE</span>
+            <span>LUXURY &middot; TRUST &middot; HERITAGE</span>
           </div>
 
           <button className="mobile-close" type="button" onClick={onClose}>
@@ -99,7 +109,11 @@ export default function Sidebar({ open, onClose }) {
         </nav>
 
         <div className="sidebar-bottom">
-          <button type="button" className="sidebar-logout">
+          <button
+            type="button"
+            className="sidebar-logout"
+            onClick={handleLogout}
+          >
             <LogOut size={14} strokeWidth={1.45} />
             <span>Log Out</span>
           </button>
