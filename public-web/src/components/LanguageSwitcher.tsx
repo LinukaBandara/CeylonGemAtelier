@@ -10,10 +10,7 @@ export function LanguageSwitcher() {
 
   useEffect(() => {
     const saved = localStorage.getItem("cga-language") || "en";
-    // Intentional client-only hydration of a persisted browser preference.
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrentLanguage(saved);
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoaded(true);
   }, []);
 
