@@ -21,13 +21,13 @@ export function GemListings({ collection, title }: GemListingsProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch gems from API on mount
   useEffect(() => {
     const loadGems = async () => {
       try {
         setIsLoading(true);
         const gems = await fetchAllGems();
         setAllGems(gems);
+        setResults(collection ? gems.filter((g) => g.collection === collection) : gems);
         setError(null);
       } catch (err) {
         const errorMessage =
@@ -40,16 +40,7 @@ export function GemListings({ collection, title }: GemListingsProps) {
     };
 
     loadGems();
-  }, []);
-
-  // Filter by collection when gems are loaded
-  useEffect(() => {
-    if (collection) {
-      setResults(allGems.filter((g) => g.collection === collection));
-    } else {
-      setResults(allGems);
-    }
-  }, [allGems, collection]);
+  }, [collection]);
 
   const availableGems =
     collection ? allGems.filter((g) => g.collection === collection) : allGems;
@@ -62,7 +53,6 @@ export function GemListings({ collection, title }: GemListingsProps) {
         </h1>
       )}
 
-      {/* Error State */}
       {error && (
         <div className="mb-8 p-6 bg-red-50 border border-red-200 rounded">
           <p className="text-red-700 font-medium mb-2">Failed to load catalog</p>
@@ -76,7 +66,6 @@ export function GemListings({ collection, title }: GemListingsProps) {
         </div>
       )}
 
-      {/* Loading State */}
       {isLoading && !error && (
         <div className="py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -94,22 +83,17 @@ export function GemListings({ collection, title }: GemListingsProps) {
               </div>
             ))}
           </div>
-          <p className="text-center text-[var(--color-muted)] mt-8">
-            Loading catalog...
-          </p>
+          <p className="text-center text-[var(--color-muted)] mt-8">Loading catalog...</p>
         </div>
       )}
 
-      {/* Content State */}
       {!isLoading && !error && (
         <>
           <SearchFilter gems={availableGems} onResults={setResults} />
 
           {showCompare && (
             <div className="mb-8 border border-[var(--color-stone)]/40 p-6 bg-[var(--color-parchment)]/10">
-              <h3 className="font-serif text-lg text-[var(--color-graphite)] mb-4">
-                Comparison Tool
-              </h3>
+              <h3 className="font-serif text-lg text-[var(--color-graphite)] mb-4">Comparison Tool</h3>
               <CompareGems availableGems={availableGems} />
             </div>
           )}
@@ -133,7 +117,6 @@ export function GemListings({ collection, title }: GemListingsProps) {
                 href={`/gems/${gem.slug}`}
                 className="group block bg-[var(--color-ivory)] border border-[var(--color-stone)]/40 hover:border-[var(--color-graphite)]/50 transition-all duration-400 hover:shadow-[0_12px_40px_-12px_rgba(28,27,26,0.1)] hover:-translate-y-1"
               >
-                {/* Image with Wishlist Button */}
                 <div className="aspect-[3/4] relative flex items-center justify-center bg-gradient-to-br from-[#F0EBE3] to-[#E5DFD5] overflow-hidden">
                   <GemPlaceholder variant={gem.variant} size="md" />
                   <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -141,7 +124,6 @@ export function GemListings({ collection, title }: GemListingsProps) {
                   </div>
                 </div>
 
-                {/* Details */}
                 <div className="p-6">
                   <h3 className="font-serif text-lg text-[var(--color-graphite)] group-hover:text-[var(--color-sapphire)] transition-colors mb-2">
                     {gem.name}
@@ -149,37 +131,15 @@ export function GemListings({ collection, title }: GemListingsProps) {
 
                   <table className="w-full text-xs text-[var(--color-muted)] space-y-1 mb-4">
                     <tbody>
-                      <tr>
-                        <td className="font-medium text-[var(--color-graphite)] w-1/3">
-                          Specimen
-                        </td>
-                        <td>{gem.specimen}</td>
-                      </tr>
-                      <tr>
-                        <td className="font-medium text-[var(--color-graphite)]">
-                          Carat
-                        </td>
-                        <td>{gem.carat}</td>
-                      </tr>
-                      <tr>
-                        <td className="font-medium text-[var(--color-graphite)]">
-                          Colour
-                        </td>
-                        <td>{gem.colour}</td>
-                      </tr>
-                      <tr>
-                        <td className="font-medium text-[var(--color-graphite)]">
-                          Cut
-                        </td>
-                        <td>{gem.cut}</td>
-                      </tr>
+                      <tr><td className="font-medium text-[var(--color-graphite)] w-1/3">Specimen</td><td>{gem.specimen}</td></tr>
+                      <tr><td className="font-medium text-[var(--color-graphite)]">Carat</td><td>{gem.carat}</td></tr>
+                      <tr><td className="font-medium text-[var(--color-graphite)]">Colour</td><td>{gem.colour}</td></tr>
+                      <tr><td className="font-medium text-[var(--color-graphite)]">Cut</td><td>{gem.cut}</td></tr>
                     </tbody>
                   </table>
 
                   {gem.price && (
-                    <p className="text-sm font-medium text-[var(--color-graphite)] mb-2">
-                      {gem.price}
-                    </p>
+                    <p className="text-sm font-medium text-[var(--color-graphite)] mb-2">{gem.price}</p>
                   )}
 
                   <span className="text-xs tracking-wide inline-flex items-center gap-1 group-hover:gap-2 transition-all text-[var(--color-graphite)]">
@@ -192,9 +152,7 @@ export function GemListings({ collection, title }: GemListingsProps) {
 
           {results.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-[var(--color-muted)] mb-4">
-                No stones match your filters.
-              </p>
+              <p className="text-[var(--color-muted)] mb-4">No stones match your filters.</p>
               <button
                 onClick={() => setResults(availableGems)}
                 className="text-sm text-[var(--color-sapphire)] hover:text-[var(--color-graphite)] transition-colors underline"
