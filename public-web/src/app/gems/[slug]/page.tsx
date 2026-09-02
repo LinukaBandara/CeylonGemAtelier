@@ -3,33 +3,33 @@ import { notFound } from "next/navigation";
 import { GemPlaceholder } from "@/components/GemPlaceholder";
 import { Button } from "@/components/Button";
 import { gems, gemList } from "@/data/gems";
-import { fetchGemBySlug, fetchGemDetails } from "@/lib/catalog";
+import { fetchGemBySlug } from "@/lib/catalog";
+
+interface CatalogProduct {
+  slug: string;
+}
 
 export async function generateStaticParams() {
-  // First try to fetch from API, fallback to static gems
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5174";
-    const gems = await fetch(`${apiUrl}/api/catalog/products`, {
+    const catalog = await fetch(`${apiUrl}/api/catalog/products`, {
       cache: "force-cache",
     })
       .then((res) => res.json())
       .catch(() => []);
-    
-    if (Array.isArray(gems) && gems.length > 0) {
-      return gems.map((g: any) => ({ slug: g.slug }));
+
+    if (Array.isArray(catalog) && catalog.length > 0) {
+      return (catalog as CatalogProduct[]).map((g) => ({ slug: g.slug }));
     }
   } catch {
     // Fall through to static
   }
-  
-  // Fallback to static gem list
+
   return gemList.map((g) => ({ slug: g.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  
-  // Try to fetch from API first
   const apiGem = await fetchGemBySlug(slug);
   if (apiGem) {
     return {
@@ -37,8 +37,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       description: apiGem.story,
     };
   }
-  
-  // Fallback to static data
+
   const gem = gems[slug];
   if (!gem) return { title: "Specimen" };
   return {
@@ -49,15 +48,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function GemDossierPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  
-  // Try to fetch from API first
   let gem = await fetchGemBySlug(slug);
-  
-  // Fallback to static data if API fails
+
   if (!gem) {
     gem = gems[slug];
   }
-  
+
   if (!gem) notFound();
 
   return (
