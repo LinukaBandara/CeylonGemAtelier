@@ -67,7 +67,7 @@ export default function AboutPage() {
                   Mine-to-Vault Traceability
                 </h3>
                 <p className="text-xs text-[var(--color-muted)] leading-relaxed">
-                  Documented origin chain guaranteeing direct extraction from Sri Lanka's historic gravel veins.
+                  Documented origin chain guaranteeing direct extraction from Sri Lanka&apos;s historic gravel veins.
                 </p>
               </div>
 
@@ -78,7 +78,7 @@ export default function AboutPage() {
                 <h3 className="font-display text-base text-[var(--color-graphite)] mt-1 mb-2">
                   Zero Thermal Modification
                 </h3>
-                <p className="text-xs text-[var(--color-muted)] leading-relaxed">
+                <p className="text-xs text-[var(--color-muted)] leading-relaxed>
                   Stones celebrated for their natural unheated brilliance and crystalline internal structures.
                 </p>
               </div>
