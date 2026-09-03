@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 
+type Lab = "GIA" | "GRS" | "GUBELIN" | "GIC";
+
 export function CertificateLookup() {
   const [certNumber, setCertNumber] = useState("");
-  const [lab, setLab] = useState<"GIA" | "GRS" | "GUBELIN" | "GIC">("GIA");
+  const [lab, setLab] = useState<Lab>("GIA");
   const [lookupResult, setLookupResult] = useState<{
     found: boolean;
     specimen?: string;
@@ -56,7 +58,7 @@ export function CertificateLookup() {
             </label>
             <select
               value={lab}
-              onChange={(e) => setLab(e.target.value as any)}
+              onChange={(e) => setLab(e.target.value as Lab)}
               aria-label="Accredited Lab"
               className="w-full bg-[var(--background)] border border-[var(--color-stone)] px-3 py-2.5 text-xs font-mono text-[var(--color-graphite)] focus:border-[var(--color-gold)] outline-none"
             >
