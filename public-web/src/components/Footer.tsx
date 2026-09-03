@@ -18,7 +18,7 @@ export function Footer() {
           <div className="lg:col-span-5 space-y-6">
             <Logo variant="full" />
             <p className="text-sm text-[var(--color-muted)] leading-relaxed max-w-sm font-sans">
-              Natural certified gemstones sourced directly from Sri Lanka's Ratnapura and Colombo mines. Untreated, lab-verified, and available to buy worldwide.
+              Natural certified gemstones sourced directly from Sri Lanka&apos;s Ratnapura and Colombo mines. Untreated, lab-verified, and available to buy worldwide.
             </p>
             <div className="flex flex-wrap items-center gap-2 pt-1">
               {["Ratnapura", "Colombo", "Balangoda"].map((loc) => (
@@ -165,4 +165,3 @@ export function Footer() {
     </footer>
   );
 }
-
