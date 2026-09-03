@@ -9,7 +9,7 @@ export default function EnquiryPage() {
   const [status, setStatus] = useState<Status>("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [consultationType, setConsultationType] = useState<"acquisition" | "bespoke" | "private_viewing">("acquisition");
-  const [preferredMethod, setPreferredMethod] = useState<"whatsapp" | "email" | "phone">("whatsapp");
+  const preferredMethod = "whatsapp" as const;
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();

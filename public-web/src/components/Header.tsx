@@ -26,10 +26,6 @@ export function Header() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
-
   const isActive = (href: string) => {
     if (href === "/enquiry") return pathname.startsWith("/enquiry");
     if (href === "/journal") return pathname.startsWith("/journal");
@@ -141,6 +137,7 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
+              onClick={() => setMenuOpen(false)}
               className={`font-display text-2xl tracking-[0.1em] transition-colors duration-300 uppercase ${
                 isActive(link.href)
                   ? "text-[var(--color-gold)] font-medium"
@@ -159,7 +156,7 @@ export function Header() {
           </div>
 
           <p className="font-serif italic text-xs text-[var(--color-muted)] text-center mt-6 max-w-xs">
-            "Rare stones. Considered carefully. Direct provenance from Ratnapura to the world."
+            &quot;Rare stones. Considered carefully. Direct provenance from Ratnapura to the world.&quot;
           </p>
         </nav>
       </div>

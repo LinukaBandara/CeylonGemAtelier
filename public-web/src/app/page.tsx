@@ -43,7 +43,7 @@ export default function HomePage() {
             </h1>
 
             <p className="text-[var(--color-graphite)]/85 text-sm sm:text-base md:text-lg max-w-xl mx-auto font-sans leading-relaxed font-normal">
-              Buy certified untreated blue sapphires, padparadscha, and rare stones directly from Sri Lanka's historic gem mines in Ratnapura.
+              Buy certified untreated blue sapphires, padparadscha, and rare stones directly from Sri Lanka&apos;s historic gem mines in Ratnapura.
             </p>
 
             {/* Clean Counter Bar: Only Ratnapura & Colombo */}

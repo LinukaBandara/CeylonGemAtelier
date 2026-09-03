@@ -67,7 +67,7 @@ export default function AboutPage() {
                   Mine-to-Vault Traceability
                 </h3>
                 <p className="text-xs text-[var(--color-muted)] leading-relaxed">
-                  Documented origin chain guaranteeing direct extraction from Sri Lanka's historic gravel veins.
+                  Documented origin chain guaranteeing direct extraction from Sri Lanka&apos;s historic gravel veins.
                 </p>
               </div>
 

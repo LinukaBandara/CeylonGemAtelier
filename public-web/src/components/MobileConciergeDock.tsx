@@ -1,24 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
 
 export function MobileConciergeDock() {
-  const pathname = usePathname();
-  const [wishlistCount, setWishlistCount] = useState(0);
-
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("cga_wishlist");
-      if (stored) {
-        setWishlistCount(JSON.parse(stored).length);
-      }
-    } catch {
-      // ignore
-    }
-  }, [pathname]);
-
   return (
     <div className="md:hidden fixed bottom-4 left-4 right-4 z-40">
       <div className="glass-pill px-4 py-2.5 rounded-full flex items-center justify-between shadow-2xl">
