@@ -1,9 +1,11 @@
-using CeylonGemAtelier.Application.Catalog.Services;
+﻿using CeylonGemAtelier.Application.Catalog.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CeylonGemAtelier.API.Controllers;
 
 [ApiController]
+[Authorize(Roles = "Admin,Manager")]
 [Route("api/dashboard")]
 public sealed class DashboardController : ControllerBase
 {
@@ -21,3 +23,4 @@ public sealed class DashboardController : ControllerBase
         return Ok(await _service.GetSummaryAsync(cancellationToken));
     }
 }
+

@@ -1,5 +1,6 @@
-using CeylonGemAtelier.API.Infrastructure.Auth;
+﻿using CeylonGemAtelier.API.Infrastructure.Auth;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Identity;
 
 namespace CeylonGemAtelier.API.Controllers;
 
@@ -10,6 +11,7 @@ public class AuthController : ControllerBase
     private readonly IAuthenticationService _authService;
     private readonly IConfiguration _configuration;
     private readonly ILogger<AuthController> _logger;
+    private readonly PasswordHasher<ConfiguredUser> _passwordHasher = new();
 
     public AuthController(
         IAuthenticationService authService,
@@ -23,7 +25,7 @@ public class AuthController : ControllerBase
 
     /// <summary>
     /// Login using credentials supplied through configuration/environment variables.
-    /// Configure Auth:Users as a JSON object containing username, password and role.
+    /// Configure Auth:Users as a JSON object containing username, password hash and role.
     /// Production deployments must use a secret manager or environment variables.
     /// </summary>
     [HttpPost("login")]
@@ -42,7 +44,18 @@ public class AuthController : ControllerBase
         var user = configuredUsers?.FirstOrDefault(x =>
             string.Equals(x.Username, request.Username, StringComparison.Ordinal));
 
-        if (user == null || string.IsNullOrEmpty(user.Password) || user.Password != request.Password)
+        if (user == null || string.IsNullOrEmpty(user.Password))
+        {
+            _logger.LogWarning("Failed login attempt for user: {Username}", request.Username);
+            return Unauthorized(new LoginErrorResponse("Invalid username or password"));
+        }
+
+        var passwordResult = _passwordHasher.VerifyHashedPassword(
+            user,
+            user.Password,
+            request.Password);
+
+        if (passwordResult == PasswordVerificationResult.Failed)
         {
             _logger.LogWarning("Failed login attempt for user: {Username}", request.Username);
             return Unauthorized(new LoginErrorResponse("Invalid username or password"));
@@ -79,3 +92,5 @@ public class AuthController : ControllerBase
         public string Role { get; init; } = "Manager";
     }
 }
+
+

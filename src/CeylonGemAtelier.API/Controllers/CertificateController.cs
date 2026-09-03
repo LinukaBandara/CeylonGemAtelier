@@ -1,4 +1,4 @@
-using CeylonGemAtelier.Application.Catalog.DTOs;
+﻿using CeylonGemAtelier.Application.Catalog.DTOs;
 using CeylonGemAtelier.Application.Catalog.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -79,3 +79,4 @@ public sealed class CertificateController : ControllerBase
             cancellationToken));
     }
 }
+

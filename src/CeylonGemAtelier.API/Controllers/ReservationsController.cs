@@ -1,4 +1,4 @@
-using CeylonGemAtelier.Application.Catalog.DTOs;
+﻿using CeylonGemAtelier.Application.Catalog.DTOs;
 using CeylonGemAtelier.Application.Catalog.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CeylonGemAtelier.API.Controllers;
 
 [ApiController]
+[Authorize(Roles = "Admin,Manager")]
 [Route("api/reservations")]
 public sealed class ReservationsController : ControllerBase
 {
@@ -117,3 +118,4 @@ public sealed class ReservationsController : ControllerBase
         }
     }
 }
+

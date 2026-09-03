@@ -1,4 +1,4 @@
-using CeylonGemAtelier.Application.Catalog.DTOs;
+﻿using CeylonGemAtelier.Application.Catalog.DTOs;
 using CeylonGemAtelier.Application.Catalog.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CeylonGemAtelier.API.Controllers;
 
 [ApiController]
+[Authorize(Roles = "Admin,Manager")]
 [Route("api/sales")]
 public sealed class SalesController : ControllerBase
 {
@@ -100,3 +101,4 @@ public sealed class SalesController : ControllerBase
         }
     }
 }
+
