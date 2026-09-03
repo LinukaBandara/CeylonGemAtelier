@@ -11,7 +11,6 @@ interface SearchFilterProps {
 
 export function SearchFilter({ gems, onResults }: SearchFilterProps) {
   const [query, setQuery] = useState("");
-  const [showFilters, setShowFilters] = useState(false);
   const [activeFilters, setActiveFilters] = useState({
     collection: "",
     colour: "",
@@ -37,76 +36,117 @@ export function SearchFilter({ gems, onResults }: SearchFilterProps) {
 
   const clearFilters = () => {
     setQuery("");
-    setActiveFilters({ collection: "", colour: "", cut: "", clarity: "" });
+    const reset = { collection: "", colour: "", cut: "", clarity: "" };
+    setActiveFilters(reset);
     onResults(gems);
   };
 
+  const hasActiveFilters = query || Object.values(activeFilters).some(Boolean);
+
   return (
-    <div className="mb-8 space-y-4">
-      {/* Search Bar */}
-      <div className="relative">
+    <div className="mb-10 space-y-4">
+      {/* Luxury Search Input Bar */}
+      <div className="relative glass-panel rounded-sm">
         <input
           type="text"
-          placeholder="Search by name, color, origin..."
+          placeholder="Filter by specimen ID, shade (Royal Blue, Lotus), cut, or origin..."
           value={query}
           onChange={(e) => handleSearch(e.target.value)}
-          className="w-full px-4 py-3 border border-[var(--color-stone)]/40 bg-[var(--color-ivory)] text-[var(--color-graphite)] placeholder-[var(--color-muted)] focus:outline-none focus:border-[var(--color-graphite)] transition-colors"
+          className="w-full pl-11 pr-4 py-3.5 bg-transparent text-xs sm:text-sm text-[var(--color-graphite)] placeholder-[var(--color-muted)] font-sans focus:outline-none focus:ring-1 focus:ring-[var(--color-gold)]"
         />
-        <span className="absolute right-4 top-3.5 text-[var(--color-muted)]">
-          🔍
-        </span>
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--color-gold)]">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        {query && (
+          <button
+            onClick={() => handleSearch("")}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-mono text-[var(--color-muted)] hover:text-[var(--color-gold)]"
+          >
+            Clear
+          </button>
+        )}
       </div>
 
-      {/* Filter Toggle */}
-      <button
-        onClick={() => setShowFilters(!showFilters)}
-        className="text-sm text-[var(--color-graphite)] hover:text-[var(--color-sapphire)] transition-colors underline"
-      >
-        {showFilters ? "Hide Filters" : "Show Filters"}
-      </button>
-
-      {/* Filters */}
-      {showFilters && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pt-4 border-t border-[var(--color-stone)]/20">
+      {/* Luxury Facet Selectors */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+        <div>
+          <label className="block font-mono text-[9px] uppercase tracking-wider text-[var(--color-muted)] mb-1">
+            Chamber
+          </label>
           <select
             value={activeFilters.collection}
             onChange={(e) => handleFilterChange("collection", e.target.value)}
-            className="px-3 py-2 border border-[var(--color-stone)]/40 bg-[var(--color-ivory)] text-[var(--color-graphite)] text-sm focus:outline-none"
+            className="w-full px-3 py-2 text-xs font-mono bg-[var(--color-parchment)]/60 border border-[var(--color-stone)]/60 text-[var(--color-graphite)] focus:border-[var(--color-gold)] outline-none rounded-none"
           >
-            <option value="">All Collections</option>
+            <option value="">All Chambers</option>
             <option value="ceylon-sapphires">Ceylon Sapphires</option>
             <option value="padparadscha">Padparadscha</option>
             <option value="ceylon-geuda">Ceylon Geuda</option>
           </select>
+        </div>
 
+        <div>
+          <label className="block font-mono text-[9px] uppercase tracking-wider text-[var(--color-muted)] mb-1">
+            Saturation
+          </label>
           <select
             value={activeFilters.colour}
             onChange={(e) => handleFilterChange("colour", e.target.value)}
-            className="px-3 py-2 border border-[var(--color-stone)]/40 bg-[var(--color-ivory)] text-[var(--color-graphite)] text-sm focus:outline-none"
+            className="w-full px-3 py-2 text-xs font-mono bg-[var(--color-parchment)]/60 border border-[var(--color-stone)]/60 text-[var(--color-graphite)] focus:border-[var(--color-gold)] outline-none rounded-none"
           >
-            <option value="">All Colors</option>
+            <option value="">All Tones</option>
             <option value="Cornflower blue">Cornflower Blue</option>
             <option value="Royal blue">Royal Blue</option>
             <option value="Lotus pink-orange">Lotus Pink-Orange</option>
             <option value="Milky luminous">Milky Luminous</option>
           </select>
+        </div>
 
+        <div>
+          <label className="block font-mono text-[9px] uppercase tracking-wider text-[var(--color-muted)] mb-1">
+            Facet Cut
+          </label>
           <select
             value={activeFilters.cut}
             onChange={(e) => handleFilterChange("cut", e.target.value)}
-            className="px-3 py-2 border border-[var(--color-stone)]/40 bg-[var(--color-ivory)] text-[var(--color-graphite)] text-sm focus:outline-none"
+            className="w-full px-3 py-2 text-xs font-mono bg-[var(--color-parchment)]/60 border border-[var(--color-stone)]/60 text-[var(--color-graphite)] focus:border-[var(--color-gold)] outline-none rounded-none"
           >
             <option value="">All Cuts</option>
-            <option value="Cushion">Cushion</option>
-            <option value="Oval">Oval</option>
-            <option value="Round">Round</option>
+            <option value="Cushion">Cushion Cut</option>
+            <option value="Oval">Oval Brilliant</option>
+            <option value="Round">Round Brilliant</option>
           </select>
+        </div>
 
+        <div>
+          <label className="block font-mono text-[9px] uppercase tracking-wider text-[var(--color-muted)] mb-1">
+            Clarity Grade
+          </label>
+          <select
+            value={activeFilters.clarity}
+            onChange={(e) => handleFilterChange("clarity", e.target.value)}
+            className="w-full px-3 py-2 text-xs font-mono bg-[var(--color-parchment)]/60 border border-[var(--color-stone)]/60 text-[var(--color-graphite)] focus:border-[var(--color-gold)] outline-none rounded-none"
+          >
+            <option value="">All Clarities</option>
+            <option value="VVS">VVS (Eye Clean)</option>
+            <option value="VS">VS (Near Clean)</option>
+            <option value="Translucent">Translucent Silk</option>
+          </select>
+        </div>
+      </div>
+
+      {hasActiveFilters && (
+        <div className="flex items-center justify-between pt-1">
+          <span className="font-mono text-[10px] text-[var(--color-gold)]">
+            Filters Active
+          </span>
           <button
             onClick={clearFilters}
-            className="px-3 py-2 text-sm border border-[var(--color-graphite)]/40 text-[var(--color-graphite)] hover:bg-[var(--color-graphite)] hover:text-[var(--color-ivory)] transition-all"
+            className="font-mono text-[10px] uppercase tracking-wider text-[var(--color-muted)] hover:text-[var(--color-graphite)] underline"
           >
-            Clear All
+            Reset All Filters
           </button>
         </div>
       )}

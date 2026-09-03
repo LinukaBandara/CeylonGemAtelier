@@ -6,37 +6,54 @@ interface LogoProps {
   href?: string;
 }
 
-export function Logo({ variant = "wordmark", className = "", href = "/" }: LogoProps) {
+export function Logo({ variant = "full", className = "", href = "/" }: LogoProps) {
+  const gemIcon = (
+    <div className="relative w-8 h-8 md:w-9 md:h-9 flex items-center justify-center shrink-0">
+      {/* Gem facet diamond outline */}
+      <div className="absolute inset-0 border border-[var(--color-gold)] rotate-45 transition-transform duration-700 group-hover:rotate-90" />
+      <div className="absolute inset-1 border border-[var(--color-gold)]/40 rotate-12 transition-transform duration-500 group-hover:-rotate-45" />
+      <span className="relative font-display text-[10px] tracking-widest font-semibold text-[var(--color-gold)] select-none">
+        CGA
+      </span>
+    </div>
+  );
+
   if (variant === "monogram") {
     return (
-      <Link href={href} className={`inline-flex items-center justify-center ${className}`} aria-label="Ceylon Gem Atelier">
-        <span className="font-serif text-lg tracking-[0.15em] text-[var(--color-graphite)] border border-[var(--color-graphite)]/30 w-10 h-10 flex items-center justify-center">
-          CGA
-        </span>
+      <Link href={href} className={`group inline-flex items-center justify-center ${className}`} aria-label="Ceylon Gem Atelier">
+        {gemIcon}
       </Link>
     );
   }
 
-  if (variant === "full") {
+  if (variant === "wordmark") {
     return (
-      <Link href={href} className={`inline-flex items-center gap-3 ${className}`} aria-label="Ceylon Gem Atelier">
-        <span className="font-serif text-sm tracking-[0.15em] text-[var(--color-graphite)] border border-[var(--color-graphite)]/30 w-9 h-9 flex items-center justify-center shrink-0">
-          CGA
+      <Link
+        href={href}
+        className={`group inline-flex flex-col ${className}`}
+        aria-label="Ceylon Gem Atelier"
+      >
+        <span className="font-display text-lg md:text-xl tracking-[0.2em] font-semibold text-[var(--color-graphite)] uppercase leading-none">
+          Ceylon Gem
         </span>
-        <span className="font-serif text-xl tracking-tight text-[var(--color-graphite)]">
-          Ceylon Gem Atelier
+        <span className="font-serif text-[11px] md:text-xs tracking-[0.35em] text-[var(--color-gold)] uppercase font-light mt-1">
+          Atelier · Private Vault
         </span>
       </Link>
     );
   }
 
-  // wordmark
   return (
-    <Link
-      href={href}
-      className={`font-serif text-xl md:text-2xl tracking-tight text-[var(--color-graphite)] hover:opacity-80 transition-opacity ${className}`}
-    >
-      Ceylon Gem Atelier
+    <Link href={href} className={`group inline-flex items-center gap-3.5 ${className}`} aria-label="Ceylon Gem Atelier">
+      {gemIcon}
+      <div className="flex flex-col">
+        <span className="font-display text-base md:text-lg tracking-[0.22em] font-medium text-[var(--color-graphite)] uppercase leading-tight">
+          Ceylon Gem
+        </span>
+        <span className="font-serif text-[10px] tracking-[0.35em] text-[var(--color-gold)] uppercase font-light">
+          Atelier · Est. Ceylon
+        </span>
+      </div>
     </Link>
   );
 }

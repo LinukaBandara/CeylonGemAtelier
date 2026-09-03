@@ -2,18 +2,18 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { StickyEnquire } from "@/components/StickyEnquire";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 import { PageTransition } from "@/components/PageTransition";
 import { LiveChat } from "@/components/LiveChat";
+import { MobileConciergeDock } from "@/components/MobileConciergeDock";
 
 export const metadata: Metadata = {
   title: {
-    default: "Ceylon Gem Atelier | Private Gemstone House",
+    default: "Ceylon Gem Atelier | Private Gemstone Vault & Haute Joaillerie",
     template: "%s | Ceylon Gem Atelier",
   },
   description:
-    "A private Ceylon gemstone atelier. Rare stones, considered carefully. Exceptional sapphires and coloured gems sourced with provenance and integrity.",
+    "An exclusive Ceylon gemstone atelier. Certified untreated Royal Blue Sapphires, Padparadscha, and fine corundum curated for discerning collectors worldwide.",
   keywords: [
     "Ceylon sapphire",
     "Sri Lankan gemstones",
@@ -21,19 +21,20 @@ export const metadata: Metadata = {
     "untreated sapphire",
     "Padparadscha",
     "gemstone collector",
+    "GIA certified sapphire",
   ],
   authors: [{ name: "Ceylon Gem Atelier" }],
   openGraph: {
     type: "website",
     locale: "en_US",
     siteName: "Ceylon Gem Atelier",
-    title: "Ceylon Gem Atelier | Private Gemstone House",
+    title: "Ceylon Gem Atelier | Private Gemstone Vault",
     description:
-      "Rare stones. Considered carefully. A private gemstone atelier rooted in Ceylon.",
+      "Rare stones. Considered carefully. Direct provenance from Sri Lanka's historic gravels.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ceylon Gem Atelier | Private Gemstone House",
+    title: "Ceylon Gem Atelier | Private Gemstone Vault",
     description: "Rare stones. Considered carefully.",
   },
   robots: {
@@ -51,16 +52,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className="h-full antialiased"
-    >
-      <body className="min-h-full flex flex-col bg-[var(--color-ivory)] text-[var(--color-graphite)] font-sans">
+    <html lang="en" className="h-full antialiased">
+      <body className="min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)] font-sans selection:bg-[var(--color-gold)] selection:text-black">
         <OrganizationJsonLd />
         <Header />
-        <main className="flex-1"><PageTransition>{children}</PageTransition></main>
+        <main className="flex-1 pb-16 md:pb-0">
+          <PageTransition>{children}</PageTransition>
+        </main>
         <Footer />
-        <StickyEnquire />
+        <MobileConciergeDock />
         <LiveChat />
       </body>
     </html>

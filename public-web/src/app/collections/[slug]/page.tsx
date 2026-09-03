@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { GemPlaceholder } from "@/components/GemPlaceholder";
+import { GemImage } from "@/components/GemImage";
 import { Button } from "@/components/Button";
 import { gemList } from "@/data/gems";
 
@@ -68,8 +68,8 @@ export default async function CollectionDetailPage({ params }: { params: Promise
               href={`/gems/${gem.slug}`}
               className="group block bg-[var(--color-ivory)] p-6 border border-[var(--color-stone)]/30 hover:border-[var(--color-graphite)]/40 transition-all duration-400 hover:shadow-[0_12px_40px_-12px_rgba(28,27,26,0.1)] hover:-translate-y-1"
             >
-              <div className="aspect-square mb-5 flex items-center justify-center bg-gradient-to-br from-[#F0EBE3] to-[#E5DFD5]">
-                <GemPlaceholder variant={gem.variant} size="md" />
+              <div className="aspect-square mb-5 relative bg-gradient-to-br from-[#F0EBE3] to-[#E5DFD5] overflow-hidden">
+                <GemImage src={gem.images?.[0]} alt={gem.name} variant={gem.variant} fill objectFit="cover" />
               </div>
               <p className="font-mono text-xs text-[var(--color-muted)] mb-1">{gem.specimen}</p>
               <h3 className="font-serif text-lg text-[var(--color-graphite)] group-hover:opacity-80 transition-opacity">
