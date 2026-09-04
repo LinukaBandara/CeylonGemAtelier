@@ -49,8 +49,8 @@ npm run dev
 
 ```bash
 dotnet restore
- dotnet build
- dotnet test
+dotnet build
+dotnet test
 ```
 
 Configure secrets and environment-specific settings locally; do not commit credentials or production secrets.
