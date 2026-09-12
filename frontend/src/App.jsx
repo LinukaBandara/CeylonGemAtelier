@@ -2,7 +2,7 @@
 import AppLayout from "./layouts/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Inventory from "./pages/Inventory";
-import PlaceholderPage from "./pages/PlaceholderPage";
+import NotFoundPage from "./pages/NotFoundPage";
 import GemstoneDetail from "./pages/GemstoneDetail";
 import Products from "./pages/Products";
 import Certificates from "./pages/Certificates";
@@ -32,15 +32,7 @@ export default function App() {
             <Route path="/sales" element={<Sales />} />
             <Route path="/reference-data" element={<ReferenceData />} />
             <Route path="/settings" element={<Settings />} />
-            <Route
-              path="*"
-              element={
-                <PlaceholderPage
-                  title="Not Found"
-                  description="This atelier route does not exist."
-                />
-              }
-            />
+            <Route path="*" element={<NotFoundPage />} />
           </Route>
         </Route>
       </Routes>
